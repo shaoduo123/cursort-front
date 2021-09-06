@@ -27,6 +27,7 @@ export default {
   actions:{
 
   },
+  namespaced:true
 
   /**有时候我们需要从 store 中的 state 中派生出一些状态，例如对列表进行过滤并计数：
    * 如果有多个组件需要用到此属性，我们要么复制这个函数，或者抽取到一个共享函数然后在多处导入它，所以getters 的意义在于此。

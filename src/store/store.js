@@ -19,8 +19,10 @@ export default new Vuex.Store({
   Actions,
   getters,
   modules:{
-    g:State,
+    //g:State,
     search:Search,
     file:Mfile,
   }
+  ,
+  namespaced:true,
 })

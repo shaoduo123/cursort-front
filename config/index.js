@@ -10,7 +10,15 @@ module.exports = {
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
-    proxyTable: {},
+    /**proxyTable是配置后台服务器接口，每次请求接口需要在url上加入api ，后台不需要加api**/
+    proxyTable: {
+      '/api': {
+        target: 'http://192.168.0.101:8090',
+        pathRewrite: {
+          '^/api': ''
+        }
+      }
+    },
 
     // Various Dev Server settings
     host: 'localhost', // can be overwritten by process.env.HOST

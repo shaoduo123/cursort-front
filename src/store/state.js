@@ -9,6 +9,7 @@ export default {
      create_time:'',
      balance:'',
      last_time:'',//最后访问时间
+     token:'',
    }
   }
 }
