@@ -3,9 +3,11 @@ import Vuex from 'vuex'
 import State from './state.js'
 import Mutations from './mutations.js'
 import Actions from './actions'
-import Search from '../components/search/store/options'
-import Mfile from '../components/file/store/options'
 import getters from './getters'
+
+import Search from './modules/search'
+import File from './modules/file'
+import Login from './modules/login'
 
 Vue.use(Vuex);
 /**
@@ -14,14 +16,33 @@ Vue.use(Vuex);
  * 任意位置获取方式：this.$store.search.state.xxxx
  */
 export default new Vuex.Store({
-  State,
+  state:{
+    userInfo:{
+      id:'',
+      name:'少多',
+      phone:'',
+      mail:'',
+      vip:'',
+      create_time:'',
+      balance:'',
+      last_time:'',//最后访问时间
+      token:'',
+    }
+  },
   Mutations,
-  Actions,
+  actions:{
+    testLogin({ commit, dispatch, state},payload){
+      state.userInfo.id = payload.userId;
+      state.userInfo.token = payload.token;
+      console.log("我到了user的testlogin",state.userInfo.id)
+
+    }
+  },
   getters,
   modules:{
-    //g:State,
     search:Search,
-    file:Mfile,
+    file:File,
+    login:Login
   }
   ,
   namespaced:true,

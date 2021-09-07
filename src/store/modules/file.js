@@ -9,7 +9,7 @@ export default {
   mutations:{
     setChooseStatus(state,payload){
       state.chooseStatus = payload.checkboxIsShow;
-      console.log("--setChooseStatus")
+      console.log("--setChooseStatus",state.chooseStatus)
     },
     setCheckIds(state,payload){
       state.checkedIds = payload.checkedIds;
@@ -22,6 +22,9 @@ export default {
     },
     checkIds(state){ //暴露选中的id
       return state.checkedIds;
+    },
+    chooseStatus(state){ //暴露选中状态
+      return state.chooseStatus;
     }
   },
   actions:{
@@ -35,9 +38,3 @@ export default {
    * 在vue类中使用计算属性 去拿 store.getters.xxxx来取值**/
 
 }
-
-// const getters={
-//     test(state){
-//       return 111;
-//     }
-// }

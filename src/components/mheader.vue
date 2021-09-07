@@ -10,9 +10,8 @@
       <i class="iconfont icon-tongzhi1 icon-style"></i>
       <i class="iconfont icon-tequan icon-style"></i>
       <i class="iconfont icon-shezhi1 icon-style"></i>
-<!--      <span>{{global.state.userInfo.name}}</span>-->
-      <span>{{username}}</span>
-<!--      <span>{{testGetter}}</span>-->
+      <span>{{userInfo.name}}</span>
+<!--      <span>{{checkIds}}</span>-->
     </div>
   </div>
 </template>
@@ -20,45 +19,55 @@
 <script>
 import Mbutton from "./mbutton";
 import Tool from "./tool";
-import global from "../store/store"
-import mfileStore from "./file/store"
-import searchStore from "./search/store";
+import store from "../store/store";
+import { mapState, mapGetters, mapMutations, mapActions } from "vuex";
 export default {
   name: "mheader",
   components: {Tool, Mbutton},
-  global,
-  mfileStore,
-  searchStore,
+  store,
   data(){
     return{
     }
   },mounted() {
 
   },computed:{
-    showFlag:{
-          get(){
-            return mfileStore.state.chooseStatus
-          },
-          set(value){
-            //this.$store.commit('setPhoneNumber',value)
-          }
-        },
-    username:{
-      get(){
-         //console.log('aaaa',global.state.g.userInfo.name)
-         return global.state.g.userInfo.name;
-      },
-    },
-    checkedIds:{
-      get(){
-        return mfileStore.getters.checkIds;
-      },
-    },
-    testGetter(){
-      console.log('拿到自己组件的getter', this.$store.getters.test)
-      console.log('拿到兄弟或其他组件的getter', mfileStore.getters.test)
-      return mfileStore.getters.test;
-    }
+
+    /**等价于将$store.state.file.chooseStatus
+     *
+     * 映射到了一个compute**/
+    ...mapState("file",{
+      showFlag:"chooseStatus",
+      //checkIds:"checkedIds", //mapper也可以这样接
+    }),
+    ...mapState({userInfo:'userInfo'}),
+
+    ...mapGetters("file",{
+      checkIds:"checkIds",
+    })
+
+    /**以下被 mapstate mapgetters 和 mapaction 以及 mapstatus替代**/
+   // showFlag:{
+   //        get(){
+   //          //两种拿到兄弟数据的方式， 一个是通过 $store.state.file.chooseStatus; 拿到
+   //          //另外一种是通过getter拿到
+   //          return this.$store.state.file.chooseStatus;
+   //        }
+   //      },
+    // username:{
+    //   get(){
+    //      return this.$store.state.userInfo.name;
+    //   },
+    // },
+    // checkedIds:{
+    //   get(){
+    //     return this.$store.getters["file/checkIds"];
+    //   },
+    // },
+    // testGetter(){
+    // //  console.log('拿到自己组件的getter', this.$store.getters.test)
+    //   console.log('拿到兄弟或其他组件的getter', this.$store.getters["file/test"])
+    //   return this.$store.getters["file/test"];
+    // }
  },watch:{
     checkedIds:{
       handler(newVal,oldVal){

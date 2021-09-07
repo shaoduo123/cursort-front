@@ -20,7 +20,7 @@
       <div class="data-list">
         <div class="item" :class="{'item-choose':item.check,'forbidden-child-pointer-events': forbiddenChildePointerEvents}" :draggable="!checkboxIsShow" @dragstart="onDragstart(item,$event)" @dragenter="onDragEnter(item,$event)" @dragleave="onDragLeave(item,$event)" @dragend="onDragend(item,$event)" @dragover="onDragover(item,$event)" @drop="onDrop(item,$event)"  v-for="(item,i) in fileList" @touchstart="onItemLongClick(item)" @touchend="onItemTouchEnd()">
           <div class="item-file"  @click="onItemClick(item)">
-            <img src="../../assets/floder.png" width="42" height="42" />
+            <img src="../assets/floder.png" width="42" height="42" />
             <span>{{ item.name }}</span>
           </div>
           <div class="item-attribute" click="onItemClick(item)">
@@ -44,10 +44,10 @@
 </template>
 
 <script>
-import store from "./store/"
-import global from "../../store/store"
+import store from "./mfile"
+import global from "../store/store"
 import $ from 'jquery'
-import dad from '../../assets/js/jquery.dad.min'
+import dad from '../assets/js/jquery.dad.min'
 export default {
   name: "mfile",
   store,
@@ -329,11 +329,11 @@ export default {
         this.checkboxChooseAll =false; //取消全选
        // _this.$store.state.chooseStatus=false; //通知其他组件们的状态
         console.log("mfile-store",this.$store)
-        _this.$store.commit("setChooseStatus",{checkboxIsShow:false})
+        _this.$store.commit("file/setChooseStatus",{checkboxIsShow:false})
       }else{
         _this.checkboxIsShow =true;
       //  _this.$store.state.chooseStatus=true; //通知其他组件们的状态
-        _this.$store.commit("setChooseStatus",{checkboxIsShow:true})
+        _this.$store.commit("file/setChooseStatus",{checkboxIsShow:true})
       }
     },
     onItemLongClick(item){
@@ -359,7 +359,7 @@ export default {
           checkedIds.push(item.id);
         }
       });
-      this.$store.commit('setCheckIds',{'checkedIds':checkedIds});
+      this.$store.commit('file/setCheckIds',{'checkedIds':checkedIds});
     },onDragstart(item,event){
         this.forbiddenChildePointerEvents = true;
         console.log(this.forbiddenChildePointerEvents)

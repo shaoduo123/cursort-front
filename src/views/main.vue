@@ -20,14 +20,14 @@
 
 
 <script>
-import search from "../components/search/search";
+import search from "../components/search";
 import store from "../store/store.js"
 import logo from "../components/logo";
 import m from '../components/menu/mymenu'
 import mcode from '../components/mcode'
 import mprogress from "../components/mprogress";
 import Mheader from "../components/mheader";
-import Mfile from "../components/file/mfile";
+import Mfile from "../components/mfile";
 import Mfooter from "../components/mfooter";
 export default {
   components: {

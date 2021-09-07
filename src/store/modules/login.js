@@ -18,9 +18,10 @@ export default {
         password: loginVo.password
       })
         .then(function (response) {
-         var data =  response.data;
-         dispatch('app/testLogin',null,{root:true})
-          console.log(response);
+         var userInfo =  response.data.data;
+          console.log(userInfo);
+         dispatch('testLogin',userInfo,{root:true})
+
         })
         .catch(function (error) {
           console.log(error);

@@ -100,7 +100,7 @@
 
 </template>
 <script>
-import store from './store';
+import store from "../store/store";
 export default {
   name:'mlogin',
   store,
@@ -187,7 +187,7 @@ export default {
   width: 45px;
   height: 45px;
   margin-right: 0;
-  background:#ffffff url("../../assets/login-code-ic.png");
+  background:#ffffff url("../assets/login-code-ic.png");
   background-size: contain;
   cursor: pointer;
 }
@@ -297,7 +297,7 @@ export default {
   width: 45px;
   height: 45px;
   margin-right: 0;
-  background:#ffffff url("../../assets/login-pc-ic.png");
+  background:#ffffff url("../assets/login-pc-ic.png");
   background-size: contain;
   cursor: pointer;
 }

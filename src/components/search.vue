@@ -3,38 +3,27 @@
     <div class="search-warp">
       <input type="text" class="search-wrap-input" placeholder="搜索内容" />
       <a href="#" class="search-wrap-button" >
-        <img src="../../assets/search.png">
+        <img src="../assets/search.png">
       </a>
-<!-- <span> 拿出本vue的store{{this.$store.state.test}}</span>-->
-<!--  调用全局的store，可以拿出兄弟组件 <span>{{global.state.file.testStr}}</span>   -->
-<!--      <span>{{ global.state.file.testStr }}</span>-->
   </div>
 </template>
 
 <script>
-import store from './store'
-import global from '../../store/store'
-import brother from '../file/store/options'
+import store from "../store/store";
 export default {
   name: "search",
   props:{
     keyword:String,
   },
   mounted() {
-    // console.log("global",global)
-    // console.log("self-store",this.$store.state.test)
-    // console.log("global-store1",global.state.file.testStr)
-    // console.log("brother-store",brother.state.testStr)
-    // console.log("search-commit",this.$store);
-    //console.log("aaaaaaa",this.$store);
-    console.log("search-store",this.$store);
-    //this.$store.commit('setTest',{test:"searchaaa"})
+
+    //console.log("search-store",this.$store);
   },
   methods:{
   doSearch(){
 
   }
-},store,global,brother
+},store
 }
 </script>
 

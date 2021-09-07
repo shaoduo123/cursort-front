@@ -26,7 +26,7 @@
   </div>
 </template>
 <script>
-import Mlogin from "../components/login/mlogin";
+import Mlogin from "../components/mlogin";
 export default {
   components: {Mlogin}
 }
