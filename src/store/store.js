@@ -17,25 +17,31 @@ Vue.use(Vuex);
  */
 export default new Vuex.Store({
   state:{
-    userInfo:{
-      id:'',
-      name:'少多',
-      phone:'',
-      mail:'',
-      vip:'',
-      create_time:'',
-      balance:'',
-      last_time:'',//最后访问时间
-      token:'',
-    }
+    // userInfo:{
+    //   id:'',
+    //   name:'',
+    //   phone:'',
+    //   mail:'',
+    //   vip:'',
+    //   create_time:'',
+    //   balance:'',
+    //   last_time:'',//最后访问时间
+    //   unread:0
+    // },
+    userInfo: JSON.parse((typeof (localStorage.getItem("userInfo"))=='undefined')?"null":localStorage.getItem("userInfo")),
+    token: localStorage.getItem("Authorization")||"",
   },
-  Mutations,
+  mutations:{
+    setUserInfo(state,payload){
+      state.userInfo = payload;
+    },
+    setToken(state,payload){
+      state.token = payload;
+    }
+    },
   actions:{
     testLogin({ commit, dispatch, state},payload){
-      state.userInfo.id = payload.userId;
-      state.userInfo.token = payload.token;
-      console.log("我到了user的testlogin",state.userInfo.id)
-
+      commit('setUserInfo',payload);
     }
   },
   getters,

@@ -29,6 +29,7 @@ import mprogress from "../components/mprogress";
 import Mheader from "../components/mheader";
 import Mfile from "../components/mfile";
 import Mfooter from "../components/mfooter";
+import {mapState} from 'vuex';
 export default {
   components: {
     Mfooter,
@@ -46,9 +47,18 @@ export default {
     }
   },
   mounted() {
-    // console.log("main-store",this.$store.state.search.test)
-   console.log("main-store-getter",this.$store.getters.testaa);
-   console.log("main-store",this.$store)
+    console.log("view/main",this.userInfo);
+    console.log("view/main",this.token);
+    //var aa = undefined;
+    //权限检查
+    if(this.token == "" ){
+      this.$router.push('/login');
+    }else if (this.userInfo.id ==''){
+      this.$router.push('/login');
+    }
+  },
+  computed:{
+    ...mapState({userInfo:'userInfo',token:'token'})
   },
   store
 }
