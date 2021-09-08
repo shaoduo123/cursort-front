@@ -32,7 +32,7 @@ export default {
 
   },computed:{
 
-    /**等价于将$store.state.file.chooseStatus
+    /**等价于将$store.state.file.chooseStatus 映射到 一个名为 showFlag的computed中
      *
      * 映射到了一个compute**/
     ...mapState("file",{

@@ -37,12 +37,12 @@
             <span @click="changeType(0)">用户密码登录 ></span>
           </div>
           <div class="login-middle">
-            <input class="username" type="text" placeholder="手机号" v-model="phone"/>
+            <input class="username" type="text"  placeholder="手机号" v-model="phone"/>
             <div class="msg-code">
-              <input class="code"  type="text" placeholder="验证码"/>
+              <input class="code"  type="text" v-model="captcha" placeholder="验证码"/>
               <a class="button" :class="{'msg-disable':msgDisable}" href="#" @click="sendMsg()">{{sendMsgText}}</a>
             </div>
-            <a class="button line-space" href="#">登录</a>
+            <a class="button line-space" href="#" @click="doLogin()">登录</a>
             <a class="forget-password" href="#">忘记密码？</a>
           </div>
           <div class="login-footer">
@@ -61,7 +61,7 @@
         <h3>扫码登录</h3>
       </div>
       <div class="login-middle center">
-        <img src="src/assets/code.png">
+        <img src="../assets/code.png">
         <span>使用移动客户端扫码认证登录</span>
       </div>
       <div class="login-footer">
@@ -78,16 +78,16 @@
           </div>
           <div class="login-top">
             <h3>用户注册</h3>
-            <span @click="changeType(0)">密码登录></span>
+<!--            <span @click="changeType(0)">密码登录></span>-->
           </div>
           <div class="login-middle">
-            <input class="username" type="text" placeholder="手机号"/>
-            <input class="password" type="password" placeholder="请设置您的密码"/>
+            <input class="username" type="text" v-model="phone" placeholder="手机号"/>
+            <input class="password" type="password" v-model="password" placeholder="请设置您的密码"/>
             <div class="msg-code">
-              <input class="code" type="text" placeholder="验证码"/>
+              <input class="code" type="text" v-model="captcha" placeholder="验证码"/>
               <a class="button  " href="#">发送验证码</a>
               </div>
-            <a class="button line-space" href="#">立即注册</a>
+            <a class="button line-space" @click="doRegister()" href="#">立即注册</a>
           </div>
           <div class="login-footer">
             <a href="#">忘记密码？</a>
@@ -113,8 +113,14 @@ export default {
       msgDisable:false,
       phone:'',
       password:'',
+      captcha:'',
     }
-  },methods:{
+  },
+  mounted() {
+    //默认进入页面时候注销
+    this.doLogout();
+  },
+  methods:{
     changeType(type){
       this.showType = type;
     },
@@ -124,6 +130,9 @@ export default {
         if(!this.checkPhoneNumber(this.phone)){
           return false;
         }
+
+        this.$store.dispatch("sendCaptcha",{phone:this.phone});
+
         var _this = this;
         var timer = setInterval(function (){
           _this.msgTimerCount =_this.msgTimerCount+1 ;
@@ -137,6 +146,7 @@ export default {
             clearInterval(timer);
           }
         },1000);
+
       }else{
         this.$layer.msg('请在'+this.msgOverTime+'秒后重试', {icon: 2});
       }
@@ -152,12 +162,40 @@ export default {
       }
       return true;
     },doLogin(){
-        let loginVo ={
-          phone : this.phone,
-          password: this.password,
+      var loginMutation = 'login';
+      let loginVo = {} ;
+
+        if(this.showType==0){
+          loginMutation = 'login'
+          loginVo ={
+            phone : this.phone,
+            password: this.password,
+          };
         }
-        this.$store.dispatch('login',{'loginVo':loginVo});
-    }
+        if(this.showType == 1){
+          loginMutation = 'loginByPhone'
+          loginVo = {
+            phone:this.phone,
+            captcha:this.captcha
+          }
+        }
+
+        this.$store.dispatch(loginMutation,{'loginVo':loginVo})
+          .then((resp) => {
+            //进入页面
+            console.log('mlogin',resp)
+            this.$router.push({name:'Main'})
+          })
+          .catch((error) => {
+            //登录出错
+            console.log(error);
+            this.$layer.msg(error, {icon: 0});
+          });
+    },doLogout(){
+        this.$store.dispatch('logout');
+    },doRegister(){
+
+    },
   }
 }
 </script>

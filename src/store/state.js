@@ -2,7 +2,7 @@ export default {
   state:{
    userInfo:{
      id:'',
-     name:'少多',
+     name:'',
      phone:'',
      mail:'',
      vip:'',

@@ -13,7 +13,7 @@ module.exports = {
     /**proxyTable是配置后台服务器接口，每次请求接口需要在url上加入api ，后台不需要加api**/
     proxyTable: {
       '/api': {
-        target: 'http://192.168.0.101:8090',
+        target: 'http://127.0.0.1:8090',
         pathRewrite: {
           '^/api': ''
         }
