@@ -110,6 +110,26 @@ export default {
           });
 
       });
+    }, register({commit, dispatch, state}, payload) {
+      console.log("regesit",payload);
+      return new Promise((resolve, reject) => {
+        axios.post('/api/tokens/register', {
+            phone: payload.user.phone,
+            captcha: payload.user.captcha,
+            password: payload.user.password,
+        }).then(function (response) {
+          debugger;
+          if(response.data.code==0){
+            resolve("注册成功！");
+          }else{
+            reject("注册失败!"+response.data.msg);
+          }
+        }) .catch(function (error) {
+            console.log('login', error)
+            reject(error);
+          });
+
+      });
     },
   }
 }

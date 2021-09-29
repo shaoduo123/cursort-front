@@ -1,7 +1,10 @@
 <template>
   <div class="content-wrap">
     <div class="option-bar">
-      <span class="title">全部图片</span>
+<!--      <span class="title">-->
+<!--        全部图片{{currFile.name}}-->
+<!--      </span>-->
+      <floder-nav class="title" :floder="currFile" @back="onBack" @backRoot="onBackRoot" @navSelect="onNavSelect"></floder-nav>
       <div class="review">
         <i class="iconfont icon-gengduo2 icon-option-style" ></i>
         <i class="iconfont icon-shezhi icon-option-style"></i>
@@ -18,9 +21,10 @@
       </div>
 
       <div class="data-list">
-        <div class="item" :class="{'item-choose':item.check,'forbidden-child-pointer-events': forbiddenChildePointerEvents}" :draggable="!checkboxIsShow" @dragstart="onDragstart(item,$event)" @dragenter="onDragEnter(item,$event)" @dragleave="onDragLeave(item,$event)" @dragend="onDragend(item,$event)" @dragover="onDragover(item,$event)" @drop="onDrop(item,$event)"  v-for="(item,i) in fileList" @touchstart="onItemLongClick(item)" @touchend="onItemTouchEnd()">
+        <div class="item"  :class="{'item-choose':item.check,'forbidden-child-pointer-events': forbiddenChildePointerEvents}" :draggable="!checkboxIsShow" @dragstart="onDragstart(item,$event)" @dragenter="onDragEnter(item,$event)" @dragleave="onDragLeave(item,$event)" @dragend="onDragend(item,$event)" @dragover="onDragover(item,$event)" @drop="onDrop(item,$event)"  v-for="(item,i) in fileList" @touchstart="onItemLongClick(item)" @touchend="onItemTouchEnd()">
           <div class="item-file"  @click="onItemClick(item)">
-            <img src="../assets/floder.png" width="42" height="42" />
+            <img v-if="item.type== 'FOLDER' " src="../assets/floder.png" width="42" height="42" />
+            <img v-else :src="item.preUrl" width="42" height="42" />
             <span>{{ item.name }}</span>
           </div>
           <div class="item-attribute" click="onItemClick(item)">
@@ -34,7 +38,7 @@
               <a><i class="iconfont icon-shoucang icon-option-style"></i></a>
               <a><i class="iconfont icon-shanchu icon-option-style"></i></a>
             </div>
-            <span>{{item.create_time}}</span>
+            <span>{{item.createTime}}</span>
           </div>
           <input type="checkbox" class="file-checkbox" v-model="item.check"  :class="{'checkboxshow': checkboxIsShow}" />
         </div>
@@ -48,239 +52,242 @@ import store from "./mfile"
 import global from "../store/store"
 import $ from 'jquery'
 import dad from '../assets/js/jquery.dad.min'
+import {mapActions, mapState, mapMutations} from "vuex";
+import FloderNav from "./floder-nav";
 export default {
   name: "mfile",
+  components: {FloderNav},
   store,
   global,
   data(){
     return{
-      fileList:[
-        {
-          id:'1',
-          name:'文件夹1',
-          father:'',
-          type:'FOLDER',
-          num:'1',
-          create_time:'2021-09-01 12:00:00',
-          check:false
-        },
-        {
-          id:'2',
-          name:'文件夹2',
-          father:'',
-          type:'FOLDER',
-          num:'1',
-          create_time:'2021-09-01 12:05:00',
-          check:false
-        },
-        {
-          id:'3',
-          name:'文件夹3',
-          father:'',
-          num:'2',
-          type:'FOLDER',
-          create_time:'2021-09-01 12:10:00',
-          check:false
-        },
-        {
-          id:'4',
-          name:'文件夹4',
-          father:'',
-          type:'FOLDER',
-          num:'3',
-          create_time:'2021-09-01 12:10:00',
-          check:false
-        },
-        {
-          id:'5',
-          name:'文件夹5',
-          father:'',
-          num:'4',
-          type:'FOLDER',
-          create_time:'2021-09-01 12:10:00',
-          check:false
-        },
-        {
-          id:'5',
-          name:'文件夹5',
-          father:'',
-          num:'4',
-          type:'FOLDER',
-          create_time:'2021-09-01 12:10:00',
-          check:false
-        },
-        {
-          id:'5',
-          name:'文件夹5',
-          father:'',
-          num:'4',
-          type:'FOLDER',
-          create_time:'2021-09-01 12:10:00',
-          check:false
-        },
-        {
-          id:'5',
-          name:'文件夹5',
-          father:'',
-          num:'4',
-          type:'FOLDER',
-          create_time:'2021-09-01 12:10:00',
-          check:false
-        },
-        {
-          id:'5',
-          name:'文件夹5',
-          father:'',
-          num:'4',
-          type:'FOLDER',
-          create_time:'2021-09-01 12:10:00',
-          check:false
-        },
-        {
-          id:'5',
-          name:'文件夹5',
-          father:'',
-          num:'4',
-          type:'FOLDER',
-          create_time:'2021-09-01 12:10:00',
-          check:false
-        },
-        {
-          id:'5',
-          name:'文件夹5',
-          father:'',
-          num:'4',
-          type:'FOLDER',
-          create_time:'2021-09-01 12:10:00',
-          check:false
-        },
-        {
-          id:'5',
-          name:'文件夹5',
-          father:'',
-          num:'4',
-          type:'FOLDER',
-          create_time:'2021-09-01 12:10:00',
-          check:false
-        },
-        {
-          id:'5',
-          name:'文件夹5',
-          father:'',
-          num:'4',
-          type:'FOLDER',
-          create_time:'2021-09-01 12:10:00',
-          check:false
-        },
-        {
-          id:'5',
-          name:'文件夹5',
-          father:'',
-          num:'4',
-          type:'FOLDER',
-          create_time:'2021-09-01 12:10:00',
-          check:false
-        },
-        {
-          id:'5',
-          name:'文件夹5',
-          father:'',
-          num:'4',
-          type:'FOLDER',
-          create_time:'2021-09-01 12:10:00',
-          check:false
-        },
-        {
-          id:'5',
-          name:'文件夹5',
-          father:'',
-          num:'4',
-          type:'FOLDER',
-          create_time:'2021-09-01 12:10:00',
-          check:false
-        },
-        {
-          id:'5',
-          name:'文件夹5',
-          father:'',
-          num:'4',
-          type:'FOLDER',
-          create_time:'2021-09-01 12:10:00',
-          check:false
-        },
-        {
-          id:'5',
-          name:'文件夹5',
-          father:'',
-          num:'4',
-          type:'FOLDER',
-          create_time:'2021-09-01 12:10:00',
-          check:false
-        },
-        {
-          id:'5',
-          name:'文件夹5',
-          father:'',
-          num:'4',
-          type:'FOLDER',
-          create_time:'2021-09-01 12:10:00',
-          check:false
-        },
-        {
-          id:'5',
-          name:'文件夹5',
-          father:'',
-          num:'4',
-          type:'FOLDER',
-          create_time:'2021-09-01 12:10:00',
-          check:false
-        },
-        {
-          id:'5',
-          name:'文件夹5',
-          father:'',
-          num:'4',
-          type:'FOLDER',
-          create_time:'2021-09-01 12:10:00',
-          check:false
-        },
-        {
-          id:'5',
-          name:'文件夹5',
-          father:'',
-          num:'4',
-          type:'FOLDER',
-          create_time:'2021-09-01 12:10:00',
-          check:false
-        },
-        {
-          id:'5',
-          name:'文件夹5',
-          father:'',
-          num:'4',
-          type:'FOLDER',
-          create_time:'2021-09-01 12:10:00',
-          check:false
-        },
-        {
-          id:'5',
-          name:'文件夹5',
-          father:'',
-          num:'4',
-          type:'FOLDER',
-          create_time:'2021-09-01 12:10:00',
-          check:false
-        },
-        {
-          id:'5',
-          name:'文件夹5',
-          father:'',
-          num:'4',
-          type:'FOLDER',
-          create_time:'2021-09-01 12:10:00',
-          check:false
-        }
-      ],
+      // fileList:[
+      //   {
+      //     id:'1',
+      //     name:'文件夹1',
+      //     father:'',
+      //     type:'FOLDER',
+      //     num:'1',
+      //     create_time:'2021-09-01 12:00:00',
+      //     check:false
+      //   },
+      //   {
+      //     id:'2',
+      //     name:'文件夹2',
+      //     father:'',
+      //     type:'FOLDER',
+      //     num:'1',
+      //     create_time:'2021-09-01 12:05:00',
+      //     check:false
+      //   },
+      //   {
+      //     id:'3',
+      //     name:'文件夹3',
+      //     father:'',
+      //     num:'2',
+      //     type:'FOLDER',
+      //     create_time:'2021-09-01 12:10:00',
+      //     check:false
+      //   },
+      //   {
+      //     id:'4',
+      //     name:'文件夹4',
+      //     father:'',
+      //     type:'FOLDER',
+      //     num:'3',
+      //     create_time:'2021-09-01 12:10:00',
+      //     check:false
+      //   },
+      //   {
+      //     id:'5',
+      //     name:'文件夹5',
+      //     father:'',
+      //     num:'4',
+      //     type:'FOLDER',
+      //     create_time:'2021-09-01 12:10:00',
+      //     check:false
+      //   },
+      //   {
+      //     id:'5',
+      //     name:'文件夹5',
+      //     father:'',
+      //     num:'4',
+      //     type:'FOLDER',
+      //     create_time:'2021-09-01 12:10:00',
+      //     check:false
+      //   },
+      //   {
+      //     id:'5',
+      //     name:'文件夹5',
+      //     father:'',
+      //     num:'4',
+      //     type:'FOLDER',
+      //     create_time:'2021-09-01 12:10:00',
+      //     check:false
+      //   },
+      //   {
+      //     id:'5',
+      //     name:'文件夹5',
+      //     father:'',
+      //     num:'4',
+      //     type:'FOLDER',
+      //     create_time:'2021-09-01 12:10:00',
+      //     check:false
+      //   },
+      //   {
+      //     id:'5',
+      //     name:'文件夹5',
+      //     father:'',
+      //     num:'4',
+      //     type:'FOLDER',
+      //     create_time:'2021-09-01 12:10:00',
+      //     check:false
+      //   },
+      //   {
+      //     id:'5',
+      //     name:'文件夹5',
+      //     father:'',
+      //     num:'4',
+      //     type:'FOLDER',
+      //     create_time:'2021-09-01 12:10:00',
+      //     check:false
+      //   },
+      //   {
+      //     id:'5',
+      //     name:'文件夹5',
+      //     father:'',
+      //     num:'4',
+      //     type:'FOLDER',
+      //     create_time:'2021-09-01 12:10:00',
+      //     check:false
+      //   },
+      //   {
+      //     id:'5',
+      //     name:'文件夹5',
+      //     father:'',
+      //     num:'4',
+      //     type:'FOLDER',
+      //     create_time:'2021-09-01 12:10:00',
+      //     check:false
+      //   },
+      //   {
+      //     id:'5',
+      //     name:'文件夹5',
+      //     father:'',
+      //     num:'4',
+      //     type:'FOLDER',
+      //     create_time:'2021-09-01 12:10:00',
+      //     check:false
+      //   },
+      //   {
+      //     id:'5',
+      //     name:'文件夹5',
+      //     father:'',
+      //     num:'4',
+      //     type:'FOLDER',
+      //     create_time:'2021-09-01 12:10:00',
+      //     check:false
+      //   },
+      //   {
+      //     id:'5',
+      //     name:'文件夹5',
+      //     father:'',
+      //     num:'4',
+      //     type:'FOLDER',
+      //     create_time:'2021-09-01 12:10:00',
+      //     check:false
+      //   },
+      //   {
+      //     id:'5',
+      //     name:'文件夹5',
+      //     father:'',
+      //     num:'4',
+      //     type:'FOLDER',
+      //     create_time:'2021-09-01 12:10:00',
+      //     check:false
+      //   },
+      //   {
+      //     id:'5',
+      //     name:'文件夹5',
+      //     father:'',
+      //     num:'4',
+      //     type:'FOLDER',
+      //     create_time:'2021-09-01 12:10:00',
+      //     check:false
+      //   },
+      //   {
+      //     id:'5',
+      //     name:'文件夹5',
+      //     father:'',
+      //     num:'4',
+      //     type:'FOLDER',
+      //     create_time:'2021-09-01 12:10:00',
+      //     check:false
+      //   },
+      //   {
+      //     id:'5',
+      //     name:'文件夹5',
+      //     father:'',
+      //     num:'4',
+      //     type:'FOLDER',
+      //     create_time:'2021-09-01 12:10:00',
+      //     check:false
+      //   },
+      //   {
+      //     id:'5',
+      //     name:'文件夹5',
+      //     father:'',
+      //     num:'4',
+      //     type:'FOLDER',
+      //     create_time:'2021-09-01 12:10:00',
+      //     check:false
+      //   },
+      //   {
+      //     id:'5',
+      //     name:'文件夹5',
+      //     father:'',
+      //     num:'4',
+      //     type:'FOLDER',
+      //     create_time:'2021-09-01 12:10:00',
+      //     check:false
+      //   },
+      //   {
+      //     id:'5',
+      //     name:'文件夹5',
+      //     father:'',
+      //     num:'4',
+      //     type:'FOLDER',
+      //     create_time:'2021-09-01 12:10:00',
+      //     check:false
+      //   },
+      //   {
+      //     id:'5',
+      //     name:'文件夹5',
+      //     father:'',
+      //     num:'4',
+      //     type:'FOLDER',
+      //     create_time:'2021-09-01 12:10:00',
+      //     check:false
+      //   },
+      //   {
+      //     id:'5',
+      //     name:'文件夹5',
+      //     father:'',
+      //     num:'4',
+      //     type:'FOLDER',
+      //     create_time:'2021-09-01 12:10:00',
+      //     check:false
+      //   },
+      //   {
+      //     id:'5',
+      //     name:'文件夹5',
+      //     father:'',
+      //     num:'4',
+      //     type:'FOLDER',
+      //     create_time:'2021-09-01 12:10:00',
+      //     check:false
+      //   }
+      // ],
       checkedList:[],
       checkboxChooseAll:false,
       checkboxIsShow:false,
@@ -304,10 +311,36 @@ export default {
   },
   mounted(){
     console.log("file-store",this.$store)
+    this.getRootFolder()
+      .then((resp) => {
+        //如果没有东西就为空
+        if(this.rootFile==null)
+          return false ;
+
+        var payload = {
+           folderId:this.rootFile.id,
+           count:99999,
+           page:1
+        }
+        this.getFiles(payload).then((resp) => {
+
+        }).catch((error) => {
+          this.$layer.msg(error, {icon: 0});
+        });
+
+      })
+      .catch((error) => {
+        this.$layer.msg(error, {icon: 0});
+      });
+
     //this.$store.commit("setChooseStatus",{checkboxIsShow:false})
     //this.store.commit("setChooseStatus",{checkboxIsShow:false})
+  },computed:{
+    ...mapState("file",{fileList:'fileList',currFile:'currFile',rootFile:'rootFile'})
   },
   methods:{
+    ...mapActions("file",{getRootFolder:'getRootFolder',getFiles:'getFiles',getReviewFiles:'getFilesByFloder'}),
+    ...mapMutations("file", { setChooseStatus: "setChooseStatus",setImage:"setImage",setReviewFiles:"setReviewFiles",setCurrFile:"setCurrFile"}),
     checkedAll(){
       var _this = this;
       this.fileList.forEach(function(item) {
@@ -327,13 +360,14 @@ export default {
       if(checkedCount==0){
         this.checkboxIsShow =false;//停止显示每条itemcheckbox
         this.checkboxChooseAll =false; //取消全选
-       // _this.$store.state.chooseStatus=false; //通知其他组件们的状态
         console.log("mfile-store",this.$store)
-        _this.$store.commit("file/setChooseStatus",{checkboxIsShow:false})
+
+        //_this.$store.commit("file/setChooseStatus",{checkboxIsShow:false})
+        this.setChooseStatus({checkboxIsShow:false});
       }else{
         _this.checkboxIsShow =true;
-      //  _this.$store.state.chooseStatus=true; //通知其他组件们的状态
-        _this.$store.commit("file/setChooseStatus",{checkboxIsShow:true})
+        this.setChooseStatus({checkboxIsShow:true});
+        //_this.$store.commit("file/setChooseStatus",{checkboxIsShow:true})
       }
     },
     onItemLongClick(item){
@@ -351,7 +385,52 @@ export default {
       console.log("点击了",item.name);
       if(this.checkboxIsShow){
         item.check = !item.check;
+        return false;
       }
+      if(item.type =='FOLDER'){
+
+        let payload = {
+          folderId:item.id,
+          count:10,
+          page:1
+        }
+        this.getFiles(payload).then((resp) => {
+          this.setCurrFile(item);
+        }).catch((error) => {
+          this.$layer.msg(error, {icon: 0});
+        });
+
+      }else {
+        let reviewFiles = [] ;
+        let index = 0 ;
+        let i = 0 ;
+        this.fileList.forEach(function (ite){
+          if(ite.type.split('/')[0] =='image'){
+            reviewFiles.push(ite) ;
+
+            if(item.id == ite.id){
+              console.log("clickindex:",i);
+              index =  i ;
+            }
+            i++ ;
+          }
+        });
+        let payload = {
+          reviewFiles:reviewFiles,
+          index:index,
+        }
+        this.setReviewFiles(payload),
+        this.$router.push({name:'review'});
+
+/*        this.getReviewFiles(item.fatherId)
+          .then((res) => {
+            this.$router.push({name:'review'});
+        })
+          .catch((error) => {
+            this.$layer.msg(error, {icon: 0});
+          });*/
+      }
+
     },updateCheckIds(newFiles){
       var checkedIds =[];
       newFiles.forEach(function(item) {
@@ -382,6 +461,15 @@ export default {
       event.currentTarget.style.boxSizing = 'border-box';
     },onDragLeave(item,event){
       event.currentTarget.style.border = "0 dotted red";
+    },open(){
+      // this.setImage("");
+    },onBack(floder){
+        console.log("mfile-onBack",floder)
+        this.onItemClick(floder);
+    },onBackRoot(floder) {
+        this.onItemClick(floder);
+    },onNavSelect(floder) {
+        this.onItemClick(floder);
     }
   }
 }
@@ -422,11 +510,9 @@ export default {
 }
 
  .content-wrap .option-bar .title{
-  width: 80px;
+  width: 400px;
   margin-left: 40px;
   margin-right: auto; /**自动撑开**/
-  display: flex;
-  justify-content: center;
 }
 
  .content-wrap .option-bar .review{
@@ -468,6 +554,8 @@ export default {
   display: flex;
   align-items: center;
   font-size: 14px;
+  transition: border-color .3s,background-color .3s,color .3s;
+  flex-shrink: 0;
 }
 
 .file-list .item input[type=checkbox]{
@@ -519,6 +607,11 @@ export default {
 .item-file img{
   padding-right: 20px;
   margin-left: 5px;
+}
+.item-file span{
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
 }
 .item-attribute{
   flex: 1;

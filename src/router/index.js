@@ -3,12 +3,18 @@ import Router from 'vue-router'
 import HelloWorld from '@/components/HelloWorld'
 import Main from '@/views/main'
 import Login from '@/views/login'
+import review from "../views/review";
 
 Vue.use(Router)
 
 
 export default new Router({
   routes: [
+    {
+      path: '/review',
+      name: 'review',
+      component: review
+    },
     {
       path: '/login',
       name: 'login',

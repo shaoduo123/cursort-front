@@ -1,7 +1,10 @@
 <template>
   <div id="app">
 <!--    <img src="./assets/logo.png">-->
-    <router-view/>
+  <!--  keepalive 能保留上一页数据 后退时候不会丢失  除去预览的页面 exclude 后边跟的是组件的name并不是路有的name -->
+    <keep-alive exclude="imgPreview">
+       <router-view/>
+    </keep-alive>
   </div>
 </template>
 

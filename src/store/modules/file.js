@@ -1,10 +1,16 @@
+import axios from "../../assets/js/http";
 
 export default {
   state:{
     chooseStatus:false, //文件选中的状态，选中状态需要联动其他组件 显示响应的操作
     checkedIds:[],
     testStr:"文字来自文件组件",
+    rootFile:{},
     currFile:{}, //当前文件夹或文件
+    fileList:[],
+    reviewFiles:[], //查看页面
+    reviewIndex:0,  //查看的第几张图片
+    uploadFiles:[], //上传列表
   },
   mutations:{
     setChooseStatus(state,payload){
@@ -14,6 +20,30 @@ export default {
     setCheckIds(state,payload){
       state.checkedIds = payload.checkedIds;
       console.log(state.checkedIds) ;
+    },
+    setFileList(state,payload){
+      /**初始化选择为false**/
+      payload.forEach(function(item) {
+        item.check = false;
+      });
+      state.fileList = payload ;
+    },
+    setCurrFile(state,payload){
+      state.currFile = payload;
+    },
+    setRootFile(state,payload){
+      state.rootFile = payload;
+    },
+    setImage(state,payload){
+   //   state.visiable = true ;
+   //   state.image = 'https://img.zcool.cn/community/014de75542b5750000019ae936d00b.jpg@1280w_1l_0o_100sh.jpg';
+    },
+    setReviewFiles(state,payload){
+      state.reviewFiles = payload.reviewFiles;
+      state.reviewIndex = payload.index;
+    },
+    setUploadFiles(state,payload){
+      state.reviewFiles = payload;
     }
   },
   getters:{
@@ -28,7 +58,74 @@ export default {
     }
   },
   actions:{
+    getRootFolder({commit,state,dispatch}){
+      return new Promise((resolve, reject) => {
+        axios.get('/api/file/getRoot')
+          .then(function (response) {
+          debugger;
+          if (response.data.code == 0) {
+            var rootFloder = response.data.data;
+            //dispatch('testLogin', userInfo, {root: true});
+            commit('setCurrFile',rootFloder);
+            commit('setRootFile',rootFloder);
+            resolve(response.data.msg);
+          } else {
+            reject(response.data.msg);
+          }
+        })
+          .catch(function (error) {
+            reject(error);
+          });
+      });
+    },
+    getFiles({commit,state,dispatch},payload){
+      let folderId = payload.folderId ;
+      let count = payload.count ;
+      let page = payload.page ;
+      return new Promise((resolve, reject) => {
+        axios.get('/api/file/list', {
+          params:{
+            fileId: folderId,
+            count: count,
+            page: page
+          }
+        }).then(function (response) {
+          debugger;
+          if (response.data.code == 0) {
+            var fileList = response.data.data;
+            //dispatch('testLogin', userInfo, {root: true});
 
+            commit('setFileList',fileList);
+            resolve(response.data.msg);
+          } else {
+            reject(response.data.msg);
+          }
+        })
+          .catch(function (error) {
+            reject(error);
+          });
+      });
+  },
+ /*   getFilesByFloder({commit,state,dispatch},payload){
+      let folderId = payload.folderId ;
+      return new Promise((resolve,reject)=>{
+        axios.get('/api/file/getFilesById',{
+          params:{
+            folderId: folderId,
+          }
+        }).then(function (res){
+          if(res.data.code == 0 ){
+           let fileList =  res.data.data ;
+            commit('setReviewFiles',fileList);
+            resolve(res.data.msg);
+          }else{
+            reject(res.data.msg);
+          }
+        }).catch(function (error){
+          reject(error);
+        })
+      })
+    }*/
   },
   namespaced:true
 

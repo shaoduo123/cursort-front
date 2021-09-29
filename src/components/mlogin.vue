@@ -85,7 +85,7 @@
             <input class="password" type="password" v-model="password" placeholder="请设置您的密码"/>
             <div class="msg-code">
               <input class="code" type="text" v-model="captcha" placeholder="验证码"/>
-              <a class="button  " href="#">发送验证码</a>
+              <a class="button" :class="{'msg-disable':msgDisable}" href="#" @click="sendMsg()">{{sendMsgText}}</a>
               </div>
             <a class="button line-space" @click="doRegister()" href="#">立即注册</a>
           </div>
@@ -194,7 +194,24 @@ export default {
     },doLogout(){
         this.$store.dispatch('logout');
     },doRegister(){
+      let user = {
+        phone:this.phone,
+        name:this.phone,
+        password:this.password,
+        captcha: this.captcha
+      }
 
+      this.$store.dispatch("register",{user})
+        .then((success) => {
+          //进入页面
+          this.$layer.msg(success,{icon:0});
+          this.showType = 0 ;
+        })
+        .catch((error) => {
+          //登录出错
+          console.log(error);
+          this.$layer.msg(error, {icon: 0});
+        });
     },
   }
 }

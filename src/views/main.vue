@@ -15,6 +15,7 @@
       <mfooter></mfooter>
     </div>
 <!--  {{this.$store.state.search.test}}-->
+    <fox-preview-image v-model="visiable" :src="image" z-index="9000"></fox-preview-image>
   </div>
 </template>
 
@@ -29,6 +30,7 @@ import mprogress from "../components/mprogress";
 import Mheader from "../components/mheader";
 import Mfile from "../components/mfile";
 import Mfooter from "../components/mfooter";
+import FoxPreviewImage from "../components/preview-image";
 import {mapState} from 'vuex';
 export default {
   components: {
@@ -39,14 +41,15 @@ export default {
     logo,
     search,
     mcode,
-    mprogress
+    mprogress,
+    FoxPreviewImage
   },
   data(){
     return{
       keyword:'aaaa'
     }
   },
-  mounted() {
+  created() {
     console.log("view/main",this.userInfo);
     console.log("view/main",this.token);
     //var aa = undefined;
@@ -57,8 +60,12 @@ export default {
       this.$router.push('/login');
     }
   },
+  mounted() {
+
+  },
   computed:{
-    ...mapState({userInfo:'userInfo',token:'token'})
+    ...mapState({userInfo:'userInfo',token:'token'}),
+    ...mapState("file",{visiable:'visiable',image:'image'})
   },
   store
 }

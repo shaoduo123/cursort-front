@@ -12,9 +12,11 @@
   "dependencies": {
     "axios": "^0.21.3",
     "jquery": "^3.6.0",
+    "lightgallery": "^2.2.1",
     "vue": "^2.5.2",
     "vue-layer": "^1.2.5",
     "vue-router": "^3.0.0",
+    "vue-upload-component": "^2.8.22",
     "vuex": "^3.6.2"
   },
   "devDependencies": {
