@@ -43,15 +43,9 @@ export default {
       this.button.addEventListener('click', this.changeDisplay, false)
     }
 
-
-    // if (this.button) {
-    //   this.$slots.button.addEventListener('click', this.changeDisplay, false)
-    // }
   },
   beforeDestroy() {
     if(this.trigger=='hover'){
-      // this.button.removeEventListener('mouseenter',this.open,false) ;
-      // this.button.removeEventListener('mouseleave',this.close,false) ;
       if(this.$refs.popover){
         this.$refs.popover.addEventListener('mouseenter',this.open);
         this.$refs.popover.addEventListener('mouseleave',this.close) ;
@@ -88,12 +82,15 @@ export default {
   },methods: {
     open() {
       this.mvisible =true;
+      this.$emit("popend",this.mvisible)
     },
     close() {
       this.mvisible =false;
+      this.$emit("popend",this.mvisible)
     },
     changeDisplay() {
       this.mvisible = !this.mvisible;
+      this.$emit("popend",this.mvisible)
     }
   },computed:{
     // visible(newVal,oldVal) {
@@ -139,6 +136,7 @@ export default {
   width: 100%;
   height: 100%;
   flex-direction: column;
+  overflow-y: scroll;
 }
 
 .dialog-content-title{
@@ -157,7 +155,6 @@ export default {
   display: flex;
   flex-direction: column;
   height: 100%;
-  overflow-y: scroll;
 }
 .dialog-content-item{
   width: 100%;

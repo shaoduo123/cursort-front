@@ -6,12 +6,14 @@ export default  {
     let pdf = ['pdf'];
     let excel = ['xsl'];
     let contentType = {
-      'image/jpeg':'jpeg',
+      'image/jpeg':'jpg',
       'image/gif':'gif',
       'image/png':'png',
-      'video/mpeg4':'mp4',
+      'application/x-xls':'excel',
+      'application/msword':'word',
+      'application/pdf':'pdf',
     }
-    let thumb = '../assets/file_';
+    let thumb = 'file_';
     // image/jpeg  video/mp4
     if(fileType!=null&&typeof(fileType)!='undefined'&&fileType!=''){
       for(let key in contentType){
@@ -21,7 +23,7 @@ export default  {
       }
     }
 
-    return thumb+'file_unkonwn.png'
+    return thumb+'unkonwn.png'
 
   }
 

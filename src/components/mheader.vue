@@ -3,10 +3,14 @@
     <div class="option">
 <!--      <tool :showOpt="showFlag" :curr-floder="currFile.id" class="tool"></tool>-->
 
-      <div class="tool" v-if="showFlag">
+      <div class="tool" v-if="pasteFlag!=0">
+        <mbutton type="primary" icon="icon-zuhe" @click.native="pasteFlag==1?copyFiles():((pasteFlag==2)?moveFiles():false)" >粘贴到此</mbutton>
+        <mbutton type="light" icon="icon-cuowu" @click.native="showHidePaste(0)" >取消</mbutton>
+      </div>
+      <div class="tool" v-else-if="showFlag">
         <mbutton type="light" icon="icon-xiazai3" @click.native="download()">下载</mbutton>
-        <mbutton type="light" icon="icon-zuhe" @click.native="copyFiles(1,1)" >复制</mbutton>
-        <mbutton type="light" icon="icon-jianqie" @click.native="moveFiles()" >移动</mbutton>
+        <mbutton type="light" icon="icon-zuhe" @click.native="showHidePaste(1)" >复制</mbutton>
+        <mbutton type="light" icon="icon-jianqie" @click.native="showHidePaste(2)" >移动</mbutton>
         <mbutton type="light" icon="icon-shanchu" @click.native="delFiles(111)">删除</mbutton>
       </div>
       <div class="tool" v-else>
@@ -24,8 +28,7 @@
           <mbutton icon="icon-shangchuan" type="primary"> 文件上传 </mbutton>
         </file-upload>
 
-
-        <mbutton icon="icon-wenjianjia" type="light">新建文件夹</mbutton>
+        <mbutton icon="icon-wenjianjia" type="light" @click.native="newFloder()">新建文件夹</mbutton>
       </div>
     </div>
     <div class="blank-arae">
@@ -33,9 +36,9 @@
     </div>
     <div class="more">
 
-      <popover @open="handleOpen" :mvisible="uploadPopoverVisible"  :trigger="'hover'" :width="300" :height="300">
+      <popover @open="handleOpen" :mvisible="uploadPopoverVisible"  :trigger="'click'" @popend="uploadPopoverVisible= !uploadPopoverVisible" :width="300" :height="300">
         <i class="iconfont icon-shangchuan icon-style" slot="button" ></i>
-        <div  slot="content">
+        <div  slot="content"  >
           <div class="dialog-content-title">
             <span>{{files.length}}个上传任务</span>
             <span>全部清空</span>
@@ -44,7 +47,7 @@
 
             <div v-for="(item,i) in files" class="dialog-content-item">
               <div class="dialog-content-item-filename">
-                <img  src="../assets/ic_image_v2.png">
+                <img :src="item.thumb">
                 <div class="dialog-content-item-filename-title">
                   <span>{{item.name}}</span>
                   <span>{{item.sizeM}}M</span>
@@ -77,7 +80,7 @@ import store from "../store/store";
 import { mapState, mapGetters, mapMutations, mapActions } from "vuex";
 import Popover from "./popover";
 import  FileUpload from  "vue-upload-component"
-
+import util from '../utils/util';
 
 export default {
   name: "mheader",
@@ -88,6 +91,7 @@ export default {
       uploadPopoverVisible : false,
       files:[],
       multiple:true,
+      pasteFlag:0,
     }
   },mounted() {
 
@@ -98,8 +102,8 @@ export default {
      * 映射到了一个compute**/
     ...mapState("file",{
       showFlag:"chooseStatus",
-      currFile:"currFile"
-      //checkIds:"checkedIds", //mapper也可以这样接
+      currFile:"currFile",
+      //checkIds:"checkedIds", //map也可以这样接
     }),
     ...mapState({userInfo:'userInfo',token:'token'}),
     // ...mapState("file",{uploadFiles:'uploadFiles'}),
@@ -136,19 +140,44 @@ export default {
       handler(newVal,oldVal){
         console.log('header拿到选中的id', newVal)
       }
+    },
+    files(val){
+      console.log("上传",val)
+      this.$refs.upload.active = false
+      this.$refs.upload.active = true ; //自动开始上传
+      this.uploadPopoverVisible = true;
+      val.forEach((item)=>{
+        item.sizeM = (item.size/1024/1024).toFixed(3)
+        //item.thumb = require('@/assets/'+this.util.pickType(item.type));
+        let thumbName  = util.pickType(item.type) ;
+        item.thumb = require('../assets/'+thumbName) ;
+      })
+
+
     }
   },methods:{
+    ...mapMutations('file',{setShowFlag:'setChooseStatus',setSourceIds:'setSourceIds'}),
+    ...mapActions('file',{dels:'delFiles',createFolder:'createFolder',copy:'copy',cut:'cut'}),
     handleOpen(){
       // alert("aaa")
       console.log("打开了")
+      this.$emit("end")
     },
     openPopover(){
-      alert("aaa")
       this.uploadPopoverVisible = !this.uploadPopoverVisible;
-    },   copyFiles(oldFileId,newFolderId){
-      console.log("copy")
     },
-    delFiles(fileId){
+    copyFiles(){
+      console.log("copying")
+      this.copy().then((res)=>{
+        this.$layer.msg(res);
+        this.$emit("end")
+      }).catch((error)=>{
+        this.$layer.msg(error);
+      });
+      this.$emit("end")
+      this.pasteFlag=0;
+    },
+    delFiles(){
       console.log(this)
       this.$layer.confirm('确定要删除吗？',{
           title: '删除',
@@ -158,8 +187,19 @@ export default {
           icon: 3
         },
         layerid => {
-          this.$layer.msg('执行了删除');
+          this.$layer.msg('正在拼命删除中');
           this.$layer.close(layerid);
+           debugger;
+           this.dels()
+             .then(res => {
+               this.$layer.msg('删除成功！');
+               console.log("mheader-delFiles",res)
+               this.$emit("end")
+           })
+             .catch(error =>{
+               this.$layer.msg('删除失败！');
+               console.log("mheader-delFiles",error)
+           })
         },
         layerid => {
           this.$layer.msg('取消删除');
@@ -167,17 +207,45 @@ export default {
         }
       );
     },
-    moveFiles(oldFileId,newFolderId){
+    moveFiles(){
+      console.log("moving")
+      this.cut().then((res)=>{
+        this.$layer.msg(res);
+        this.$emit("end")
+      }).catch((error)=>{
+        this.$layer.msg(error);
+      });
 
+      this.pasteFlag=0;
     },
     download(fileId){
 
     },
     upload(){
 
+    },showHidePaste(flag){
+      //flag=1 是复制，flag=2是移动 ，flag=0是 不显示粘贴按钮
+      this.pasteFlag = flag ;
+      this.setSourceIds(this.checkIds);
+      this.setShowFlag({checkboxIsShow:false});
     },
-    newFloder(name,folderId){
-
+    newFloder(){
+      //例子1
+      this.$layer.prompt({title: '新建文件夹', formType: 1,area: ['200px', '170px'],shade: false},
+        (abc,layerid) => {
+          this.createFolder(abc)
+          .then(res=>{
+            this.$layer.msg(res);
+          })
+          .catch(error=>{
+            this.$layer.msg(error);
+          })
+          ;
+          this.$layer.close(layerid);
+      }, layerid => {
+        //  this.$layer.msg('取消删除');
+          this.$layer.close(layerid);
+        });
     },
     /**
      * Has changed
@@ -216,18 +284,6 @@ export default {
       if (URL && URL.createObjectURL) {
         newFile.blob = URL.createObjectURL(newFile.file)
       }
-    }
-  },watch:{
-    files(val){
-      console.log("上传",val)
-      this.$refs.upload.active = false
-      this.$refs.upload.active = true ; //自动开始上传
-      this.uploadPopoverVisible = true;
-      val.forEach((item)=>{
-        item.sizeM = (item.size/1024/1024).toFixed(3)
-      })
-
-
     }
   }
 }
@@ -335,10 +391,10 @@ export default {
 }
 
 .dialog-content-item-filename img{
-  height: 40px;
-  width: 40px;
+  height: 30px;
+  width: 30px;
   align-self: center;
-  padding: 10px 10px;
+  padding: 20px 20px;
 
 }
 

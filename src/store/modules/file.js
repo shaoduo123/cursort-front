@@ -1,16 +1,20 @@
 import axios from "../../assets/js/http";
+import qs from "qs";
 
 export default {
   state:{
     chooseStatus:false, //文件选中的状态，选中状态需要联动其他组件 显示响应的操作
-    checkedIds:[],
+    checkedIds:[], //选中的文件夹ids
+    sourceIds:[], //准备复制和粘贴的源文件ids
+    targetId:{}, //目标文件夹（粘贴或者拷贝的到的目标文件夹）id
     testStr:"文字来自文件组件",
-    rootFile:{},
+    rootFile:{}, // 根目录文件，（即将废弃，取而代之是currFile）
     currFile:{}, //当前文件夹或文件
-    fileList:[],
-    reviewFiles:[], //查看页面
+    fileList:[], //文件目录列表
+    reviewFiles:[], //查看页面时相册的图片
     reviewIndex:0,  //查看的第几张图片
-    uploadFiles:[], //上传列表
+    //uploadFiles:[], //上传列表
+    refresh:false
   },
   mutations:{
     setChooseStatus(state,payload){
@@ -42,6 +46,16 @@ export default {
       state.reviewFiles = payload.reviewFiles;
       state.reviewIndex = payload.index;
     },
+    setReviewIndex(state,payload){
+      console.log("aaaaaaa",payload)
+      state.reviewIndex = payload ;
+    },
+    setTargetId(state,payload){
+      state.targetId = payload ;
+    },
+    setSourceIds(state,payload){
+      state.sourceIds = payload ;
+    },
     setUploadFiles(state,payload){
       state.reviewFiles = payload;
     }
@@ -58,11 +72,10 @@ export default {
     }
   },
   actions:{
-    getRootFolder({commit,state,dispatch}){
+    async getRootFolder({commit,state,dispatch}){
       return new Promise((resolve, reject) => {
         axios.get('/api/file/getRoot')
           .then(function (response) {
-          debugger;
           if (response.data.code == 0) {
             var rootFloder = response.data.data;
             //dispatch('testLogin', userInfo, {root: true});
@@ -78,7 +91,8 @@ export default {
           });
       });
     },
-    getFiles({commit,state,dispatch},payload){
+    async getFiles({commit,state,dispatch},payload){
+      debugger;
       let folderId = payload.folderId ;
       let count = payload.count ;
       let page = payload.page ;
@@ -106,6 +120,149 @@ export default {
           });
       });
   },
+    async getCurrFiles({commit,state,dispatch},payload){
+      return new Promise((resolve, reject) => {
+        let folderId = payload.folderId;
+        let count = payload.count;
+        let page = payload.page;
+        if (folderId == null || folderId == "" || typeof folderId == 'undefined') {
+
+           dispatch('getRootFolder')
+            .then((resp) => {
+              //如果没有东西就为空
+              console.log("state", state)
+              if (state.currFile == null)
+                return false;
+
+              var p = {
+                folderId: state.currFile.id,
+                count: 99999,
+                page: 1
+              }
+              dispatch('getFiles', p)
+                .then((resp) => {
+                  resolve(response.data.msg);
+                }).catch((error) => {
+                reject(response.data.msg);
+              });
+
+            })
+            .catch((error) => {
+              reject(response.data.msg);
+            });
+        } else {
+
+          var p = {
+            folderId: state.currFile.id,
+            count: 99999,
+            page: 1
+          }
+          dispatch('getFiles', payload).then((resp) => {
+            resolve(resp);
+          }).catch((error) => {
+            reject(error);
+          });
+        }
+      });
+    },
+
+    delFiles({commit,state,dispatch}){
+      //let data  = qs.stringify({ fileIds: state.checkedIds }, {indices: true}) ;
+      let ids = ""
+      state.checkedIds.forEach((item)=>{
+        ids +=item+","
+      })
+      // let data = {
+      //   fileIds:state.checkedIds
+      // }
+       console.log("file-delFiles",ids);
+
+      //get请求不是长久之计策，get有最大传输数据限制，后期要改成post请求
+      return new Promise((resolve,reject)=>{
+        axios.get('/api/file/dels',{
+          params:{
+            ids:ids
+          }
+        }
+        )
+          .then(function (res) {
+            if(res.data.code == 0 ){
+              resolve(res.data.msg) ;
+            }else{
+              reject("删除失败！");
+            }
+          })
+          .catch(function (error){
+            reject(error);
+          })
+      });
+    },createFolder({commit,state,dispatch},payload){
+      let folderName = payload;
+      return new Promise((resolve,reject)=>{
+        axios.get('/api/file/createFolder',{
+            params:{
+              CURRENT_FILE_ID:state.currFile.id,
+              folderName:folderName
+            }
+          }
+        )
+          .then(function (res) {
+            if(res.data.code == 0 ){
+              resolve(res.data.msg) ;
+            }else{
+              reject(res.data.msg) ;
+            }
+          })
+          .catch(function (error){
+            reject(error);
+          })
+      })
+    },copy({commit,state,dispatch}){
+      state.targetId = state.currFile.id;
+      let ids = ""
+      state.sourceIds.forEach((item)=>{
+        ids +=item+","
+      })
+      debugger;
+      return new Promise((resolve,reject)=>{
+        axios.get('/api/file/copys',{
+          params:{
+            sourceFileIds:ids,
+            toFolderId:state.targetId
+          }
+        }).then(function (res){
+          if(res.data.code ==0 ){
+            resolve(res.data.msg) ;
+          }else{
+            reject(res.data.msg) ;
+          }
+        }).catch((error)=>{
+          reject(error) ;
+        })
+      })
+    },cut({commit,state,dispatch}){
+      state.targetId = state.currFile.id;
+      let ids = ""
+      state.sourceIds.forEach((item)=>{
+        ids +=item+","
+      })
+      return new Promise((resolve,reject)=>{
+        axios.get('/api/file/cuts',{
+          params:{
+            sourceFileIds:ids,
+            toFolderId:state.targetId
+          }
+        }).then(function (res){
+          if(res.data.code ==0 ){
+            resolve(res.data.msg) ;
+          }else{
+            reject(res.data.msg) ;
+          }
+        }).catch((error)=>{
+          reject(error) ;
+        })
+      })
+    }
  /*   getFilesByFloder({commit,state,dispatch},payload){
       let folderId = payload.folderId ;
       return new Promise((resolve,reject)=>{

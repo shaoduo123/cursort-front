@@ -13,6 +13,7 @@
     "axios": "^0.21.3",
     "jquery": "^3.6.0",
     "lightgallery": "^2.2.1",
+    "qs": "^6.7.0",
     "vue": "^2.5.2",
     "vue-layer": "^1.2.5",
     "vue-router": "^3.0.0",

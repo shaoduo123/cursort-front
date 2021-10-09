@@ -6,11 +6,11 @@
 <!--      </span>-->
       <floder-nav class="title" :floder="currFile" @back="onBack" @backRoot="onBackRoot" @navSelect="onNavSelect"></floder-nav>
       <div class="review">
-        <i class="iconfont icon-gengduo2 icon-option-style" ></i>
+        <i class="iconfont icon-shuaxin2 icon-option-style" @click="reload"></i>
         <i class="iconfont icon-shezhi icon-option-style"></i>
       </div>
     </div>
-    <div class="file-list">
+    <div v-if="fileList.length>0"  class="file-list" >
       <div class="head">
         <div class="item-file">文件名</div>
         <div class="item-attribute">属性</div>
@@ -44,6 +44,13 @@
         </div>
       </div>
     </div>
+    <div v-else class="file-list">
+      <empty image="normal">
+        <span slot="describe">
+          空空如也
+        </span>
+      </empty>
+    </div>
   </div>
 </template>
 
@@ -54,9 +61,12 @@ import $ from 'jquery'
 import dad from '../assets/js/jquery.dad.min'
 import {mapActions, mapState, mapMutations} from "vuex";
 import FloderNav from "./floder-nav";
+import empty from "./empty";
+
+
 export default {
   name: "mfile",
-  components: {FloderNav},
+  components: {FloderNav,empty},
   store,
   global,
   data(){
@@ -308,38 +318,27 @@ export default {
         this.checkedAll();
       },
     },
+    chooseStatus(val){
+      //监听如果没有选中的状态，则就全重置
+      if(val==false){
+        this.fileList.forEach(function(item) {
+          item.check = false;
+        });
+      }
+     // this.checkedAll();
+    }
   },
   mounted(){
-    console.log("file-store",this.$store)
-    this.getRootFolder()
-      .then((resp) => {
-        //如果没有东西就为空
-        if(this.rootFile==null)
-          return false ;
-
-        var payload = {
-           folderId:this.rootFile.id,
-           count:99999,
-           page:1
-        }
-        this.getFiles(payload).then((resp) => {
-
-        }).catch((error) => {
-          this.$layer.msg(error, {icon: 0});
-        });
-
-      })
-      .catch((error) => {
-        this.$layer.msg(error, {icon: 0});
-      });
+    this.init();
 
     //this.$store.commit("setChooseStatus",{checkboxIsShow:false})
     //this.store.commit("setChooseStatus",{checkboxIsShow:false})
-  },computed:{
-    ...mapState("file",{fileList:'fileList',currFile:'currFile',rootFile:'rootFile'})
+  }
+  ,computed:{
+    ...mapState("file",{fileList:'fileList',currFile:'currFile',rootFile:'rootFile',chooseStatus:"chooseStatus"})
   },
   methods:{
-    ...mapActions("file",{getRootFolder:'getRootFolder',getFiles:'getFiles',getReviewFiles:'getFilesByFloder'}),
+    ...mapActions("file",{getRootFolder:'getRootFolder',getFiles:'getFiles',getReviewFiles:'getFilesByFloder',getCurrFiles:'getCurrFiles'}),
     ...mapMutations("file", { setChooseStatus: "setChooseStatus",setImage:"setImage",setReviewFiles:"setReviewFiles",setCurrFile:"setCurrFile"}),
     checkedAll(){
       var _this = this;
@@ -391,7 +390,7 @@ export default {
 
         let payload = {
           folderId:item.id,
-          count:10,
+          count:99999,
           page:1
         }
         this.getFiles(payload).then((resp) => {
@@ -401,7 +400,7 @@ export default {
         });
 
       }else {
-        let reviewFiles = [] ;
+   /*     let reviewFiles = [] ;
         let index = 0 ;
         let i = 0 ;
         this.fileList.forEach(function (ite){
@@ -419,7 +418,25 @@ export default {
           reviewFiles:reviewFiles,
           index:index,
         }
-        this.setReviewFiles(payload),
+        this.setReviewFiles(payload);*/
+        let index = 0  ;
+        let i = 0 ;
+        this.fileList.forEach(function (ite){
+          if(ite.type.split('/')[0] =='image'){
+
+            if(item.id == ite.id){
+              console.log("clickindex:",i);
+              index =  i ;
+            }
+            i++ ;
+          }
+        });
+        let payload = {
+          reviewFiles:null,
+          index:index,
+        }
+        this.setReviewFiles(payload);
+
         this.$router.push({name:'review'});
 
 /*        this.getReviewFiles(item.fatherId)
@@ -442,6 +459,7 @@ export default {
     },onDragstart(item,event){
         this.forbiddenChildePointerEvents = true;
         console.log(this.forbiddenChildePointerEvents)
+        console.log("选中",item.name,event)
         //console.log(item.name,event)
     },onDragend(item,event){
       this.forbiddenChildePointerEvents = false;
@@ -470,6 +488,44 @@ export default {
         this.onItemClick(floder);
     },onNavSelect(floder) {
         this.onItemClick(floder);
+    },reload(){
+      //alert("我到了")
+      this.init();
+    },init(){
+      console.log("file-store",this.$store)
+
+        var payload = {
+          folderId:this.currFile.id,
+          count:99999,
+          page:1
+        }
+      this.getCurrFiles(payload).then((resp) => {
+
+            }).catch((error) => {
+              this.$layer.msg(error, {icon: 0});
+            });
+      // this.getRootFolder()
+      //   .then((resp) => {
+      //     //如果没有东西就为空
+      //     if(this.rootFile==null)
+      //       return false ;
+      //
+      //     var payload = {
+      //       folderId:this.rootFile.id,
+      //       count:99999,
+      //       page:1
+      //     }
+      //     this.getFiles(payload).then((resp) => {
+      //
+      //     }).catch((error) => {
+      //       this.$layer.msg(error, {icon: 0});
+      //     });
+      //
+      //   })
+      //   .catch((error) => {
+      //     this.$layer.msg(error, {icon: 0});
+      //   });
+
     }
   }
 }
@@ -638,6 +694,7 @@ export default {
 .icon-option-style {
   font-size: 20px;
   color: #404040;
+  padding: 5px;
 }
 
 

@@ -7,7 +7,7 @@
 
     <template v-for="(item,i) in floderList">
       <span v-if="item.name == '/' || item.faterId == ''" @click="onBackRoot">全部</span>
-      <div  v-else>
+      <div v-else>
       <i class="nav-separator" >></i>
       <span  @click="onNavSelect(item)">{{ item.name }}</span>
       </div>
@@ -35,11 +35,9 @@ export default {
     },
     onNavSelect(item){
       this.$emit('navSelect',item);
-      // this.floderList.forEach((item)=> {
-      //   if(item.id == this.floder.id){
-      //     return false;
-      //   }
-      // });
+      if(item.id == this.floderList[this.floderList.length-1].id){
+        return false;
+      }
       for(var i = this.floderList.length-1;i>=0;i--){
          if(this.floderList[i].id!=item.id){
             this.floderList.pop() ;

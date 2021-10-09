@@ -10,8 +10,8 @@
       </div>
     </div>
     <div class="main">
-      <mheader></mheader>
-      <mfile class="mfile"></mfile>
+      <mheader @end="opend"></mheader>
+      <mfile class="mfile" ref="file"></mfile>
       <mfooter></mfooter>
     </div>
 <!--  {{this.$store.state.search.test}}-->
@@ -31,7 +31,7 @@ import Mheader from "../components/mheader";
 import Mfile from "../components/mfile";
 import Mfooter from "../components/mfooter";
 import FoxPreviewImage from "../components/preview-image";
-import {mapState} from 'vuex';
+import {mapActions, mapState} from 'vuex';
 export default {
   components: {
     Mfooter,
@@ -60,12 +60,31 @@ export default {
       this.$router.push('/login');
     }
   },
+  methods:{
+    ...mapActions("file",{getCurrFiles:'getCurrFiles'}),
+    opend(){
+      // this.$refs.file.reload();
+      console.log("main-opend",'reload')
+     // alert("aaa")
+      debugger;
+      // var payload = {
+      //   folderId:this.currFile.id,
+      //   count:99999,
+      //   page:1
+      // }
+      // this.getCurrFiles(payload).then((resp) => {
+      //
+      // }).catch((error) => {
+      //   this.$layer.msg(error, {icon: 0});
+      // });
+    }
+  },
   mounted() {
 
   },
   computed:{
     ...mapState({userInfo:'userInfo',token:'token'}),
-    ...mapState("file",{visiable:'visiable',image:'image'})
+    ...mapState("file",{visiable:'visiable',image:'image',currFile:'currFile'})
   },
   store
 }

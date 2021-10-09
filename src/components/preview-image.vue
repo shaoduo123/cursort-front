@@ -64,10 +64,10 @@
             <svg viewBox="0 0 1024 1024" aria-hidden="true" class="font-svg owl-preview-utils-item" @click="anticlockwiseRotation">
                 <use href="#preview-image-refresh-right"></use>
             </svg>
-            <svg viewBox="0 0 1024 1024" aria-hidden="true" class="font-svg owl-preview-utils-item ">
+            <svg viewBox="0 0 1024 1024" aria-hidden="true" class="font-svg owl-preview-utils-item left-arrow" @click="prev">
               <use href="#preview-image-arrow-right" ></use>
             </svg>
-            <svg viewBox="0 0 1024 1024" aria-hidden="true" class="font-svg owl-preview-utils-item">
+            <svg viewBox="0 0 1024 1024" aria-hidden="true" class="font-svg owl-preview-utils-item" @click="next">
               <use href="#preview-image-arrow-right "></use>
             </svg>
         </div>
@@ -140,7 +140,7 @@ export default {
       index:{
           type:Number,
           default: 0 ,
-      }
+      },
     },
     data() {
         return {
@@ -179,7 +179,7 @@ export default {
         },
         close() {
             this.flag = false;
-            this.$emit("change", this.flag);
+
         },
 
         move(e) {
@@ -289,6 +289,7 @@ export default {
             this.cacheX = 0;
             this.cacheY = 0;
             console.log(this.active, "prev");
+           this.$emit("change", this.active);
         },
         next() {
             const len = this.uri.length || 0;
@@ -308,6 +309,7 @@ export default {
             this.cacheX = 0;
             this.cacheY = 0;
             console.log(this.active, "next");
+           this.$emit("change", this.active);
         },
     },
     beforeDestroy() {
@@ -508,5 +510,13 @@ export default {
   height: 1em;
   fill: currentColor;
   overflow: hidden;
+}
+
+.left-arrow{
+  transform:rotate(180deg);
+  -ms-transform:rotate(180deg); 	/* IE 9 */
+  -moz-transform:rotate(180deg); 	/* Firefox */
+  -webkit-transform:rotate(180deg); /* Safari 和 Chrome */
+  -o-transform:rotate(180deg); 	/* Opera */
 }
 </style>
