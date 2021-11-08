@@ -81,18 +81,21 @@ export default {
     }
   },
   methods:{
-    ...mapMutations('file',{setReviewFiles:'setReviewFiles',setReviewIndex:'setReviewIndex'}),
+    ...mapMutations('file',{setReviewFiles:'setReviewFiles',setReviewIndex:'setReviewIndex',clearFileList:'clearFileList'}),
     ...mapActions('file',{getCurrFiles:'getCurrFiles'}),
     back(){
       this.$router.go(-1);
     },
     init(){
+
       let index = this.index;
       var payload = {
         folderId:this.currFile.id,
         count:99999,
         page:1
       }
+       //clear
+      this.clearFileList();
       //去数据库中查询一遍数据
       this.getCurrFiles(payload).then((resp) => {
         let reviewFiles = [] ;
@@ -103,7 +106,6 @@ export default {
             i++ ;
           }
         });
-        console.log("index:",this.index);
         let payload = {
           reviewFiles:reviewFiles,
           index:index

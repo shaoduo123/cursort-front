@@ -1,5 +1,7 @@
 <template>
-  <div class="content-wrap">
+  <div class="main">
+    <mheader @end="reload"></mheader>
+    <div class="content-wrap">
     <div class="option-bar">
 <!--      <span class="title">-->
 <!--        全部图片{{currFile.name}}-->
@@ -7,11 +9,14 @@
       <floder-nav class="title" :floder="currFile" @back="onBack" @backRoot="onBackRoot" @navSelect="onNavSelect"></floder-nav>
       <div class="review">
         <i class="iconfont icon-shuaxin2 icon-option-style" @click="reload"></i>
-        <i class="iconfont icon-shezhi icon-option-style"></i>
+        <i class="iconfont icon-shezhi icon-option-style" @click="viewMode = !viewMode"></i>
       </div>
     </div>
-    <div v-if="fileList.length>0"  class="file-list" >
-      <div class="head">
+      <my-scroll :on-pull="getList" :loaded="loaded" :scroll-state="scrollState" ref="myScroll" class="file-list" >
+        <template v-if = "viewMode">
+
+    <div v-if="fileList.length>0"  class="file-list" slot="scrollList">
+      <div class="head" >
         <div class="item-file">文件名</div>
         <div class="item-attribute">属性</div>
         <div class="item-time">修改日期</div>
@@ -43,14 +48,27 @@
           <input type="checkbox" class="file-checkbox" v-model="item.check"  :class="{'checkboxshow': checkboxIsShow}" />
         </div>
       </div>
+
     </div>
-    <div v-else class="file-list">
-      <empty image="normal">
-        <span slot="describe">
-          空空如也
-        </span>
-      </empty>
-    </div>
+<!--    <div  class="file-list" slot="scrollList">-->
+<!--      <empty image="normal">-->
+<!--        <span slot="describe">-->
+<!--          空空如也-->
+<!--        </span>-->
+<!--      </empty>-->
+<!--    </div>-->
+    </template>
+        <template v-else  >
+            <div class="album-list" slot="scrollList" >
+              <album-item  :file="itm" v-for="(itm,index) in fileList" :key="index" @click.native="onItemClick(itm)">
+              </album-item>
+            </div>
+        </template>
+      </my-scroll>
+
+
+  </div>
+    <mfooter class="footer"></mfooter>
   </div>
 </template>
 
@@ -60,249 +78,38 @@ import global from "../store/store"
 import $ from 'jquery'
 import dad from '../assets/js/jquery.dad.min'
 import {mapActions, mapState, mapMutations} from "vuex";
+import Mheader from "../components/mheader";
+import Mfooter from "../components/mfooter";
 import FloderNav from "./floder-nav";
 import empty from "./empty";
+import MyScroll from "./mscroll";
+import AlbumItem from "./album-item";
 
 
 export default {
   name: "mfile",
-  components: {FloderNav,empty},
+  components: {
+    AlbumItem,
+    MyScroll,
+    Mheader,
+    Mfooter,
+    FloderNav,
+    empty
+  },
   store,
   global,
   data(){
     return{
-      // fileList:[
-      //   {
-      //     id:'1',
-      //     name:'文件夹1',
-      //     father:'',
-      //     type:'FOLDER',
-      //     num:'1',
-      //     create_time:'2021-09-01 12:00:00',
-      //     check:false
-      //   },
-      //   {
-      //     id:'2',
-      //     name:'文件夹2',
-      //     father:'',
-      //     type:'FOLDER',
-      //     num:'1',
-      //     create_time:'2021-09-01 12:05:00',
-      //     check:false
-      //   },
-      //   {
-      //     id:'3',
-      //     name:'文件夹3',
-      //     father:'',
-      //     num:'2',
-      //     type:'FOLDER',
-      //     create_time:'2021-09-01 12:10:00',
-      //     check:false
-      //   },
-      //   {
-      //     id:'4',
-      //     name:'文件夹4',
-      //     father:'',
-      //     type:'FOLDER',
-      //     num:'3',
-      //     create_time:'2021-09-01 12:10:00',
-      //     check:false
-      //   },
-      //   {
-      //     id:'5',
-      //     name:'文件夹5',
-      //     father:'',
-      //     num:'4',
-      //     type:'FOLDER',
-      //     create_time:'2021-09-01 12:10:00',
-      //     check:false
-      //   },
-      //   {
-      //     id:'5',
-      //     name:'文件夹5',
-      //     father:'',
-      //     num:'4',
-      //     type:'FOLDER',
-      //     create_time:'2021-09-01 12:10:00',
-      //     check:false
-      //   },
-      //   {
-      //     id:'5',
-      //     name:'文件夹5',
-      //     father:'',
-      //     num:'4',
-      //     type:'FOLDER',
-      //     create_time:'2021-09-01 12:10:00',
-      //     check:false
-      //   },
-      //   {
-      //     id:'5',
-      //     name:'文件夹5',
-      //     father:'',
-      //     num:'4',
-      //     type:'FOLDER',
-      //     create_time:'2021-09-01 12:10:00',
-      //     check:false
-      //   },
-      //   {
-      //     id:'5',
-      //     name:'文件夹5',
-      //     father:'',
-      //     num:'4',
-      //     type:'FOLDER',
-      //     create_time:'2021-09-01 12:10:00',
-      //     check:false
-      //   },
-      //   {
-      //     id:'5',
-      //     name:'文件夹5',
-      //     father:'',
-      //     num:'4',
-      //     type:'FOLDER',
-      //     create_time:'2021-09-01 12:10:00',
-      //     check:false
-      //   },
-      //   {
-      //     id:'5',
-      //     name:'文件夹5',
-      //     father:'',
-      //     num:'4',
-      //     type:'FOLDER',
-      //     create_time:'2021-09-01 12:10:00',
-      //     check:false
-      //   },
-      //   {
-      //     id:'5',
-      //     name:'文件夹5',
-      //     father:'',
-      //     num:'4',
-      //     type:'FOLDER',
-      //     create_time:'2021-09-01 12:10:00',
-      //     check:false
-      //   },
-      //   {
-      //     id:'5',
-      //     name:'文件夹5',
-      //     father:'',
-      //     num:'4',
-      //     type:'FOLDER',
-      //     create_time:'2021-09-01 12:10:00',
-      //     check:false
-      //   },
-      //   {
-      //     id:'5',
-      //     name:'文件夹5',
-      //     father:'',
-      //     num:'4',
-      //     type:'FOLDER',
-      //     create_time:'2021-09-01 12:10:00',
-      //     check:false
-      //   },
-      //   {
-      //     id:'5',
-      //     name:'文件夹5',
-      //     father:'',
-      //     num:'4',
-      //     type:'FOLDER',
-      //     create_time:'2021-09-01 12:10:00',
-      //     check:false
-      //   },
-      //   {
-      //     id:'5',
-      //     name:'文件夹5',
-      //     father:'',
-      //     num:'4',
-      //     type:'FOLDER',
-      //     create_time:'2021-09-01 12:10:00',
-      //     check:false
-      //   },
-      //   {
-      //     id:'5',
-      //     name:'文件夹5',
-      //     father:'',
-      //     num:'4',
-      //     type:'FOLDER',
-      //     create_time:'2021-09-01 12:10:00',
-      //     check:false
-      //   },
-      //   {
-      //     id:'5',
-      //     name:'文件夹5',
-      //     father:'',
-      //     num:'4',
-      //     type:'FOLDER',
-      //     create_time:'2021-09-01 12:10:00',
-      //     check:false
-      //   },
-      //   {
-      //     id:'5',
-      //     name:'文件夹5',
-      //     father:'',
-      //     num:'4',
-      //     type:'FOLDER',
-      //     create_time:'2021-09-01 12:10:00',
-      //     check:false
-      //   },
-      //   {
-      //     id:'5',
-      //     name:'文件夹5',
-      //     father:'',
-      //     num:'4',
-      //     type:'FOLDER',
-      //     create_time:'2021-09-01 12:10:00',
-      //     check:false
-      //   },
-      //   {
-      //     id:'5',
-      //     name:'文件夹5',
-      //     father:'',
-      //     num:'4',
-      //     type:'FOLDER',
-      //     create_time:'2021-09-01 12:10:00',
-      //     check:false
-      //   },
-      //   {
-      //     id:'5',
-      //     name:'文件夹5',
-      //     father:'',
-      //     num:'4',
-      //     type:'FOLDER',
-      //     create_time:'2021-09-01 12:10:00',
-      //     check:false
-      //   },
-      //   {
-      //     id:'5',
-      //     name:'文件夹5',
-      //     father:'',
-      //     num:'4',
-      //     type:'FOLDER',
-      //     create_time:'2021-09-01 12:10:00',
-      //     check:false
-      //   },
-      //   {
-      //     id:'5',
-      //     name:'文件夹5',
-      //     father:'',
-      //     num:'4',
-      //     type:'FOLDER',
-      //     create_time:'2021-09-01 12:10:00',
-      //     check:false
-      //   },
-      //   {
-      //     id:'5',
-      //     name:'文件夹5',
-      //     father:'',
-      //     num:'4',
-      //     type:'FOLDER',
-      //     create_time:'2021-09-01 12:10:00',
-      //     check:false
-      //   }
-      // ],
       checkedList:[],
       checkboxChooseAll:false,
       checkboxIsShow:false,
       loop:0, //定时器
       forbiddenChildePointerEvents:false,
+      page:1,
+      limit:10,
+      loaded:false,
+      scrollState:true,
+      viewMode:true,
     }
   },
   watch:{
@@ -333,13 +140,19 @@ export default {
 
     //this.$store.commit("setChooseStatus",{checkboxIsShow:false})
     //this.store.commit("setChooseStatus",{checkboxIsShow:false})
+  },activated() {
+    // debugger;
+    // this.$refs.myScroll.state = 2 ;
+    // this.limit = 10 ;
+    // this.page = 1 ;
+    // this.clearFileList() ;
   }
   ,computed:{
     ...mapState("file",{fileList:'fileList',currFile:'currFile',rootFile:'rootFile',chooseStatus:"chooseStatus"})
   },
   methods:{
     ...mapActions("file",{getRootFolder:'getRootFolder',getFiles:'getFiles',getReviewFiles:'getFilesByFloder',getCurrFiles:'getCurrFiles'}),
-    ...mapMutations("file", { setChooseStatus: "setChooseStatus",setImage:"setImage",setReviewFiles:"setReviewFiles",setCurrFile:"setCurrFile"}),
+    ...mapMutations("file", { setChooseStatus: "setChooseStatus",setImage:"setImage",setReviewFiles:"setReviewFiles",setCurrFile:"setCurrFile",clearFileList:'clearFileList'}),
     checkedAll(){
       var _this = this;
       this.fileList.forEach(function(item) {
@@ -387,38 +200,25 @@ export default {
         return false;
       }
       if(item.type =='FOLDER'){
-
+        this.$refs.myScroll.state = 2 ;
+        this.limit = 10 ;
+        this.page = 1 ;
+        this.clearFileList() ;
+        debugger;
         let payload = {
           folderId:item.id,
-          count:99999,
-          page:1
+          count:this.limit,
+          page:this.page
         }
         this.getFiles(payload).then((resp) => {
+          this.page++;
           this.setCurrFile(item);
         }).catch((error) => {
           this.$layer.msg(error, {icon: 0});
         });
 
-      }else {
-   /*     let reviewFiles = [] ;
-        let index = 0 ;
-        let i = 0 ;
-        this.fileList.forEach(function (ite){
-          if(ite.type.split('/')[0] =='image'){
-            reviewFiles.push(ite) ;
 
-            if(item.id == ite.id){
-              console.log("clickindex:",i);
-              index =  i ;
-            }
-            i++ ;
-          }
-        });
-        let payload = {
-          reviewFiles:reviewFiles,
-          index:index,
-        }
-        this.setReviewFiles(payload);*/
+      }else {
         let index = 0  ;
         let i = 0 ;
         this.fileList.forEach(function (ite){
@@ -431,21 +231,12 @@ export default {
             i++ ;
           }
         });
-        let payload = {
-          reviewFiles:null,
-          index:index,
-        }
-        this.setReviewFiles(payload);
-
+        let p =[];
+        p.reviewFiles=[];
+        p.index = index ;
+        this.setReviewFiles(p) ;
         this.$router.push({name:'review'});
 
-/*        this.getReviewFiles(item.fatherId)
-          .then((res) => {
-            this.$router.push({name:'review'});
-        })
-          .catch((error) => {
-            this.$layer.msg(error, {icon: 0});
-          });*/
       }
 
     },updateCheckIds(newFiles){
@@ -490,42 +281,47 @@ export default {
         this.onItemClick(floder);
     },reload(){
       //alert("我到了")
-      this.init();
+      this.getList();
     },init(){
+      this.fileList = [] ;
+      this.page= 1 ;
+      this.limit =  10;
+      debugger ;
       console.log("file-store",this.$store)
-
+      this.$refs.myScroll.setState(1);
         var payload = {
           folderId:this.currFile.id,
-          count:99999,
-          page:1
+          count:this.limit,
+          page:this.page
         }
-      this.getCurrFiles(payload).then((resp) => {
-
+        this.getCurrFiles(payload).then((resp) => {
+          this.$refs.myScroll.setState(2);
+          this.page++;
+          this.loaded= false;
             }).catch((error) => {
+              this.$refs.myScroll.setState(3)
               this.$layer.msg(error, {icon: 0});
             });
-      // this.getRootFolder()
-      //   .then((resp) => {
-      //     //如果没有东西就为空
-      //     if(this.rootFile==null)
-      //       return false ;
-      //
-      //     var payload = {
-      //       folderId:this.rootFile.id,
-      //       count:99999,
-      //       page:1
-      //     }
-      //     this.getFiles(payload).then((resp) => {
-      //
-      //     }).catch((error) => {
-      //       this.$layer.msg(error, {icon: 0});
-      //     });
-      //
-      //   })
-      //   .catch((error) => {
-      //     this.$layer.msg(error, {icon: 0});
-      //   });
 
+    },getList(){
+
+      this.$refs.myScroll.setState(1);
+      let _this = this;
+      var payload = {
+        folderId:this.currFile.id,
+        count:this.limit,
+        page:this.page
+      }
+      this.getCurrFiles(payload).then((resp) => {
+
+        _this.page++;
+        _this.loaded= false;
+        _this.$refs.myScroll.setState(2);
+      }).catch((error) => {
+        this.$refs.myScroll.setState(3);
+        this.loaded= false;
+        this.$layer.msg(error, {icon: 0});
+      });
     }
   }
 }
@@ -535,15 +331,27 @@ export default {
 
 <style scoped>
 
+.main{
+  /*background-color: coral;*/
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow:hidden; /**超出禁止显示了**/
+}
  .content-wrap{
-  flex-grow: 1; /**承包剩余空间**/
+   width: 100%;
+   flex-grow: 1;
+   min-height: 200px;
+   overflow:hidden; /**超出禁止显示了**/
+   /*height: calc(100% - 120px);*/
+  /* !**承包剩余空间**!*/
   /*flex-direction: column;*/
   /*display: flex;*/
   /*overflow-y: scroll;*/
   /**哪个孩子需要滚动，就让其父亲设置为不能滚动，孩子的高度（或宽度）超过父亲，即可滚动了
   但孩子需要设置 overflow-y:scorll 并且孩子的高度是100%
   **/
-  overflow: hidden;
 
   /**不能选中文本，蓝色的选文字的背景*/
   -moz-user-select: none; /*火狐*/
@@ -562,7 +370,7 @@ export default {
   align-items: center;
   /*padding: 5px 40px 5px 40px;*/
   padding: 10px 0px 10px 0px;
-
+   box-sizing: border-box;
 }
 
  .content-wrap .option-bar .title{
@@ -586,13 +394,13 @@ export default {
 
  .content-wrap .file-list{
   width: 100%;
-  padding: 5px 40px 5px 50px;
+  padding: 5px 20px 5px 20px;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-   flex-grow: 1;
+  height: calc(100% - 40px);
   /*height: 80%; !**去掉后不能滚动了**!*/
-  overflow-y: scroll; /**滚动的前提是让父亲滚动禁止**!*/
+  /*overflow-y: scroll;*/ /**滚动的前提是让父亲滚动禁止**!*/
 }
 .file-list .head{
   width: 100%;
@@ -649,7 +457,6 @@ export default {
   /*  pointer-events: none;*/
   /*}*/
 
-
  .forbidden-child-pointer-events >* {
     pointer-events: none;
   }
@@ -696,7 +503,19 @@ export default {
   color: #404040;
   padding: 5px;
 }
+.footer{
+}
 
+
+.album-list{
+  display: flex !important;
+  width: 100%;
+  flex-direction: row !important;
+  flex-wrap: wrap!important; /**自动换行**/
+  align-content: flex-start!important;
+  flex-shrink: 0!important;
+  /*justify-content: space-between;*/
+}
 
 /**拖拽特效**/
 

@@ -3,7 +3,9 @@
     <slot name="button" >
     </slot>
     <div class="dialog" :style="popoverStyle" v-if="mvisible">
-      <i v-if="visibleArrow" class="dialog-triangle"></i>
+      <div class="dialog-triangle-line">
+        <i v-if="visibleArrow" class="dialog-triangle"></i>
+      </div>
       <div class="dialog-content">
         <slot name="content">
         <!-- 此处书写内容 -->
@@ -22,7 +24,8 @@ export default {
       button:undefined,
       popoverStyle:{
         width: this.width+'px',
-        height:this.height+'px'
+        height:this.height+'px',
+        top:this.top+'px'
       }
     }
   },
@@ -77,6 +80,10 @@ export default {
     height: {
       type:Number,
       default:100,
+    },
+    top: {
+      type:Number,
+      default:50,
     }
 
   },methods: {
@@ -107,7 +114,6 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-
 }
 .dialog{
   position: absolute;
@@ -117,8 +123,16 @@ export default {
   box-shadow: 0 2px 8px 0 rgb(0 0 0 / 16%);
   border-radius: 8px;
   top:70px;
-  margin-left: -20px;
+  margin-left: -15px;
   transition: border-color .3s,background-color .3s,color .3s;
+  z-index: 100;
+}
+.dialog-triangle-line{
+  position: absolute;
+  /*background-color: #df5000;*/
+  height: 20px;
+  width: 100%;
+  top: -20px;
 }
 .dialog-triangle{
   width: 0;
@@ -128,7 +142,6 @@ export default {
   border: 10px solid #fff;
   border-color: transparent transparent #fffffe;
   position: absolute;
-  top: -20px;
 }
 
 .dialog-content{
@@ -137,6 +150,7 @@ export default {
   height: 100%;
   flex-direction: column;
   overflow-y: scroll;
+
 }
 
 .dialog-content-title{

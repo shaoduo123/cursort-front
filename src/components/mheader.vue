@@ -11,7 +11,8 @@
         <mbutton type="light" icon="icon-xiazai3" @click.native="download()">下载</mbutton>
         <mbutton type="light" icon="icon-zuhe" @click.native="showHidePaste(1)" >复制</mbutton>
         <mbutton type="light" icon="icon-jianqie" @click.native="showHidePaste(2)" >移动</mbutton>
-        <mbutton type="light" icon="icon-shanchu" @click.native="delFiles(111)">删除</mbutton>
+        <mbutton v-if="checkIds.length == 1 " type="light" icon="icon-bianji" @click.native="renameFile()">重命名</mbutton>
+        <mbutton type="danger" icon="icon-shanchu" @click.native="delFiles(111)">删除</mbutton>
       </div>
       <div class="tool" v-else>
 
@@ -36,7 +37,7 @@
     </div>
     <div class="more">
 
-      <popover @open="handleOpen" :mvisible="uploadPopoverVisible"  :trigger="'click'" @popend="uploadPopoverVisible= !uploadPopoverVisible" :width="300" :height="300">
+      <popover @open="handleOpen" :mvisible="uploadPopoverVisible"  :trigger="'click'" @popend="uploadPopoverVisible= !uploadPopoverVisible" :width="300" :height="300" :top="60">
         <i class="iconfont icon-shangchuan icon-style" slot="button" ></i>
         <div  slot="content"  >
           <div class="dialog-content-title">
@@ -66,8 +67,20 @@
 
       <i class="iconfont icon-tongzhi1 icon-style" @click="openPopover()"></i>
       <i class="iconfont icon-tequan icon-style"></i>
-      <i class="iconfont icon-shezhi1 icon-style"></i>
-      <span>{{userInfo.name}}</span>
+<!--      <i class="iconfont icon-shezhi1 icon-style"></i>-->
+      <popover @open="handleOpen" :mvisible="profileVisible"  :trigger="'hover'" :width="120" :height="76"  :top="60" :visibleArrow="true">
+        <span slot="button">{{userInfo.name}}</span>
+        <div  slot="content"  >
+          <div class="profile-list">
+            <div class="profile-item">
+              <span>修改资料</span>
+            </div>
+            <div class="profile-item">
+              <span>退出</span>
+            </div>
+          </div>
+        </div>
+      </popover>
 <!--      <span>{{checkIds}}</span>-->
     </div>
   </div>
@@ -89,6 +102,7 @@ export default {
   data(){
     return{
       uploadPopoverVisible : false,
+      profileVisible:false,
       files:[],
       multiple:true,
       pasteFlag:0,
@@ -157,7 +171,7 @@ export default {
     }
   },methods:{
     ...mapMutations('file',{setShowFlag:'setChooseStatus',setSourceIds:'setSourceIds'}),
-    ...mapActions('file',{dels:'delFiles',createFolder:'createFolder',copy:'copy',cut:'cut'}),
+    ...mapActions('file',{dels:'delFiles',createFolder:'createFolder',copy:'copy',cut:'cut',rename:'rename'}),
     handleOpen(){
       // alert("aaa")
       console.log("打开了")
@@ -230,7 +244,7 @@ export default {
       this.setShowFlag({checkboxIsShow:false});
     },
     newFloder(){
-      //例子1
+
       this.$layer.prompt({title: '新建文件夹', formType: 1,area: ['200px', '170px'],shade: false},
         (abc,layerid) => {
           this.createFolder(abc)
@@ -244,6 +258,25 @@ export default {
           this.$layer.close(layerid);
       }, layerid => {
         //  this.$layer.msg('取消删除');
+          this.$layer.close(layerid);
+        });
+    },
+
+    renameFile(){
+      this.$layer.prompt({title: '重命名', formType: 1,area: ['200px', '170px'],shade: false},
+        (newName,layerid) => {
+          this.rename(newName)
+            .then(res=>{
+              this.$layer.msg(res);
+              this.$emit("end");
+            })
+            .catch(error=>{
+              this.$layer.msg(error);
+            })
+          ;
+          this.$layer.close(layerid);
+        }, layerid => {
+          //  this.$layer.msg('取消删除');
           this.$layer.close(layerid);
         });
     },
@@ -295,6 +328,7 @@ export default {
   display: flex;
   flex-direction: row; /**水平显示**/
   align-items: center;
+  height: 40px;
   padding: 20px 50px 18px 40px;
   border-bottom:1px solid #d8d8d8;
 }
@@ -318,7 +352,7 @@ export default {
   flex-grow: 1; /**自适应**/
   background-color: blueviolet;
   z-index: 1000;
-  min-width: 200px; /**伸缩盒的底线。。。**/
+  min-width: 40px; /**伸缩盒的底线。。。**/
 }
  .header-warp .more{
   /*background-color: red;*/
@@ -445,5 +479,21 @@ export default {
 .dialog-content-item-option i:hover{
   background-color: #ffffff;
   font-size: 22px;
+}
+
+.profile-list{
+  display: flex;
+  flex-direction: column;
+}
+.profile-item{
+  width: 100%;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-item:hover{
+  background-color: #d2d2d2;
 }
 </style>

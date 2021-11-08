@@ -13,8 +13,8 @@ export default {
     fileList:[], //文件目录列表
     reviewFiles:[], //查看页面时相册的图片
     reviewIndex:0,  //查看的第几张图片
-    //uploadFiles:[], //上传列表
-    refresh:false
+    keyword:{},
+    refreshstate:false
   },
   mutations:{
     setChooseStatus(state,payload){
@@ -31,6 +31,9 @@ export default {
         item.check = false;
       });
       state.fileList = payload ;
+    },
+    clearFileList(state,payload){
+      state.fileList = [];
     },
     setCurrFile(state,payload){
       state.currFile = payload;
@@ -72,13 +75,42 @@ export default {
     }
   },
   actions:{
-    async getRootFolder({commit,state,dispatch}){
+    async createRoot({commit,state,dispatch}){
       return new Promise((resolve, reject) => {
         axios.get('/api/file/getRoot')
+          .then(function (response) {
+            if (response.data.code == 0) {
+              var rootFloder = response.data.data;
+              //dispatch('testLogin', userInfo, {root: true});
+              if(rootFloder==null){
+                dispatch("createRoot") ;
+              }
+              commit('setCurrFile',rootFloder);
+              commit('setRootFile',rootFloder);
+              resolve(response.data.msg);
+            } else {
+              reject(response.data.msg);
+            }
+          })
+          .catch(function (error) {
+            reject(error);
+          });
+      });
+    },
+    async getRootFolder({commit,state,dispatch}){
+      return new Promise((resolve, reject) => {
+        axios.get('/api/file/getRoot',{
+          params:{
+            CURRENT_FILE_ID:state.currFile.id,
+          }
+        })
           .then(function (response) {
           if (response.data.code == 0) {
             var rootFloder = response.data.data;
             //dispatch('testLogin', userInfo, {root: true});
+            if(rootFloder==null){
+              dispatch("createRoot") ;
+            }
             commit('setCurrFile',rootFloder);
             commit('setRootFile',rootFloder);
             resolve(response.data.msg);
@@ -101,16 +133,32 @@ export default {
           params:{
             fileId: folderId,
             count: count,
-            page: page
+            page: page,
           }
         }).then(function (response) {
           debugger;
           if (response.data.code == 0) {
             var fileList = response.data.data;
+            if(state.fileList.length == 0 && page == '1')
+            {
+              commit('setFileList',fileList);
+              resolve("加载成功");
+            }else{
+              debugger;
+              if(fileList.length == 0){
+                reject("没有数据了");
+              }
+              fileList.forEach((item)=>{
+                state.fileList.push(item);
+              })
+              resolve("加载成功");
+
+              //commit('setFileList',state.fileList);
+            }
+
             //dispatch('testLogin', userInfo, {root: true});
 
-            commit('setFileList',fileList);
-            resolve(response.data.msg);
+
           } else {
             reject(response.data.msg);
           }
@@ -136,26 +184,26 @@ export default {
 
               var p = {
                 folderId: state.currFile.id,
-                count: 99999,
-                page: 1
+                count: count,
+                page: page,
               }
               dispatch('getFiles', p)
                 .then((resp) => {
-                  resolve(response.data.msg);
+                  resolve(resp);
                 }).catch((error) => {
-                reject(response.data.msg);
+                reject(error);
               });
 
             })
             .catch((error) => {
-              reject(response.data.msg);
+              reject(error);
             });
         } else {
 
           var p = {
             folderId: state.currFile.id,
-            count: 99999,
-            page: 1
+            count: count,
+            page: page
           }
           dispatch('getFiles', payload).then((resp) => {
             resolve(resp);
@@ -251,6 +299,26 @@ export default {
           params:{
             sourceFileIds:ids,
             toFolderId:state.targetId
+          }
+        }).then(function (res){
+          if(res.data.code ==0 ){
+            resolve(res.data.msg) ;
+          }else{
+            reject(res.data.msg) ;
+          }
+        }).catch((error)=>{
+          reject(error) ;
+        })
+      })
+    },rename({commit,state,dispatch},payload){
+      let newName = payload ;
+      let fileId = state.checkedIds[0] ;
+      return new Promise((resolve,reject)=>{
+        axios.get('/api/file/rename',{
+          params:{
+            fileId:fileId,
+            newName:newName,
+            CURRENT_FILE_ID:state.currFile.id,
           }
         }).then(function (res){
           if(res.data.code ==0 ){

@@ -9,13 +9,9 @@
         <mprogress></mprogress>
       </div>
     </div>
-    <div class="main">
-      <mheader @end="opend"></mheader>
-      <mfile class="mfile" ref="file"></mfile>
-      <mfooter></mfooter>
-    </div>
-<!--  {{this.$store.state.search.test}}-->
-    <fox-preview-image v-model="visiable" :src="image" z-index="9000"></fox-preview-image>
+
+    <mfile class="mfile" ref="file"></mfile>
+
   </div>
 </template>
 
@@ -65,18 +61,7 @@ export default {
     opend(){
       // this.$refs.file.reload();
       console.log("main-opend",'reload')
-     // alert("aaa")
       debugger;
-      // var payload = {
-      //   folderId:this.currFile.id,
-      //   count:99999,
-      //   page:1
-      // }
-      // this.getCurrFiles(payload).then((resp) => {
-      //
-      // }).catch((error) => {
-      //   this.$layer.msg(error, {icon: 0});
-      // });
     }
   },
   mounted() {
@@ -146,15 +131,6 @@ export default {
   flex-direction:column; /**主轴为垂直向下方向**/
 }
 
-
-.main{
-  /*background-color: coral;*/
-  height: 100%;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  /*overflow:hidden; !**超出禁止显示了**!*/
-}
 
 .mfile{
   display: flex;
