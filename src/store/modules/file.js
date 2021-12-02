@@ -14,7 +14,8 @@ export default {
     reviewFiles:[], //查看页面时相册的图片
     reviewIndex:0,  //查看的第几张图片
     keyword:{},
-    refreshstate:false
+    refreshstate:false,
+   // uploadPopoverVisible:false, //上传弹出框
   },
   mutations:{
     setChooseStatus(state,payload){
