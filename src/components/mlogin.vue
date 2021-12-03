@@ -184,7 +184,7 @@ export default {
           .then((resp) => {
             //进入页面
             console.log('mlogin',resp)
-            this.$router.push({name:'Main'})
+            this.$router.push({name:'main'})
           })
           .catch((error) => {
             //登录出错

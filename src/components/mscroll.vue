@@ -59,7 +59,7 @@ export default {
         clearTimeout(this.timeoutId)
         _this.timeoutId = setTimeout(() => {
           _this.bottomCallback()
-        }, 100)
+        }, 500)  //此值防抖，防止一次下拉多次发送请求
       }
     },
     bottomCallback() { // 加载回调

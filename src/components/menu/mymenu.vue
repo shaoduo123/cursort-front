@@ -1,7 +1,7 @@
 <template>
   <div class="m">
 
-    <a href="JavaScript:;" class="item">
+    <a href="JavaScript:;" class="item" @click="goto('file')">
       <i class="iconfont icon-tupian icon-style" ></i>
       <span>最近图片</span>
     </a>
@@ -13,8 +13,8 @@
       <i class="iconfont icon-gongjuxiang icon-style" ></i>
       <span>工具箱</span>
     </a>
-    <a href="JavaScript:;" class="item">
-      <i class="iconfont icon-shanchu icon-style" ></i>
+    <a href="JavaScript:;" class="item" @click="goto('recycle')">
+      <i class="iconfont icon-shanchu icon-style"></i>
       <span>回收站</span>
     </a>
   </div>
@@ -23,6 +23,15 @@
 <script>
 export default {
   name: "mymenu",
+  methods: {
+    goto(val) {
+      console.log(val)
+      debugger
+      this.$router.push({
+        name: val
+      });
+    }
+  }
 }
 </script>
 

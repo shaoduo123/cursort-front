@@ -72,7 +72,7 @@
         <span slot="button">{{userInfo.name}}</span>
         <div  slot="content"  >
           <div class="profile-list">
-            <div class="profile-item">
+            <div class="profile-item" @click="test()">
               <span>修改资料</span>
             </div>
             <div class="profile-item">
@@ -172,8 +172,11 @@ export default {
   },methods:{
     ...mapMutations('file',{setShowFlag:'setChooseStatus',setSourceIds:'setSourceIds'}),
     ...mapActions('file',{dels:'delFiles',createFolder:'createFolder',copy:'copy',cut:'cut',rename:'rename'}),
+    test(){
+      console.log("test")
+    },
     handleOpen(){
-      // alert("aaa")
+       alert("aaa")
       console.log("打开了")
       this.$emit("end")
     },

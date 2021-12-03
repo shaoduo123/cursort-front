@@ -3,17 +3,39 @@
     <!-- 进度条 -->
     <div class="progress-container">
       <div class="progress-box">
-        <div class="progress-bar" style="width: 20%;"></div>
+        <div class="progress-bar" :style="{'width':space.percent}"></div>
       </div>
-      <div class="progressbar-text">20%</div>
+      <div class="progressbar-text">{{Math.floor(space.percent)}}%</div>
     </div>
-    <span>已用3.12MB/512MB</span>
+    <span>已用{{Math.floor((space.totalSize-space.restSize)/1024/1024)}}MB/{{Math.floor(space.totalSize/1024/1024)}}MB</span>
   </div>
 </template>
 
 <script>
+import store from "../store/store.js"
+import {mapActions, mapState} from "vuex";
+
 export default {
-  name: "mprogress"
+  name: "mprogress",
+  store,
+  computed:{
+    ...mapState('menu',{space:'space'})
+  },
+  created() {
+
+  },
+  mounted() {
+    console.log("mprogress 我到了")
+    this.init();
+  },
+  methods:{
+    ...mapActions("menu",{getSpace:"getSpaceSize"}) ,
+    init(){
+      debugger
+     this.getSpace() ;
+     console.log('mprogress',this.space)
+    }
+  }
 }
 </script>
 

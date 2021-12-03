@@ -8,6 +8,8 @@ import getters from './getters'
 import Search from './modules/search'
 import File from './modules/file'
 import Login from './modules/login'
+import Menu from './modules/menu.js'
+import Recycle from './modules/recycle.js'
 
 Vue.use(Vuex);
 /**
@@ -48,7 +50,9 @@ export default new Vuex.Store({
   modules:{
     search:Search,
     file:File,
-    login:Login
+    login:Login,
+    menu:Menu,
+    recycle:Recycle,
   }
   ,
   namespaced:true,

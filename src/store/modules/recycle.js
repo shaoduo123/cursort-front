@@ -76,63 +76,13 @@ export default {
     }
   },
   actions:{
-    async createRoot({commit,state,dispatch}){
-      return new Promise((resolve, reject) => {
-        axios.get('/api/file/getRoot')
-          .then(function (response) {
-            if (response.data.code == 0) {
-              var rootFloder = response.data.data;
-              //dispatch('testLogin', userInfo, {root: true});
-              if(rootFloder==null){
-                dispatch("createRoot") ;
-              }
-              commit('setCurrFile',rootFloder);
-              commit('setRootFile',rootFloder);
-              resolve(response.data.msg);
-            } else {
-              reject(response.data.msg);
-            }
-          })
-          .catch(function (error) {
-            reject(error);
-          });
-      });
-    },
-    async getRootFolder({commit,state,dispatch}){
-      return new Promise((resolve, reject) => {
-        axios.get('/api/file/getRoot',{
-          params:{
-            CURRENT_FILE_ID:state.currFile.id,
-          }
-        })
-          .then(function (response) {
-          if (response.data.code == 0) {
-            var rootFloder = response.data.data;
-            //dispatch('testLogin', userInfo, {root: true});
-            if(rootFloder==null){
-              dispatch("createRoot") ;
-            }
-            commit('setCurrFile',rootFloder);
-            commit('setRootFile',rootFloder);
-            resolve(response.data.msg);
-          } else {
-            reject(response.data.msg);
-          }
-        })
-          .catch(function (error) {
-            reject(error);
-          });
-      });
-    },
-    async getFiles({commit,state,dispatch},payload){
+    async getRecycles({commit,state,dispatch},payload){
       debugger;
-      let folderId = payload.folderId ;
       let count = payload.count ;
       let page = payload.page ;
       return new Promise((resolve, reject) => {
-        axios.get('/api/file/list', {
+        axios.get('/api/recycle/list', {
           params:{
-            fileId: folderId,
             count: count,
             page: page,
           }
@@ -154,68 +104,17 @@ export default {
                 })
                 resolve("加载成功");
               }
-
-
               //commit('setFileList',state.fileList);
             }
-
             //dispatch('testLogin', userInfo, {root: true});
-
-
           } else {
             reject(response.data.msg);
           }
-        })
-          .catch(function (error) {
+        }).catch(function (error) {
             reject(error);
           });
       });
   },
-    async getCurrFiles({commit,state,dispatch},payload){
-      return new Promise((resolve, reject) => {
-        let folderId = payload.folderId;
-        let count = payload.count;
-        let page = payload.page;
-        if (folderId == null || folderId == "" || typeof folderId == 'undefined') {
-
-           dispatch('getRootFolder')
-            .then((resp) => {
-              //如果没有东西就为空
-              console.log("state", state)
-              if (state.currFile == null)
-                return false;
-
-              var p = {
-                folderId: state.currFile.id,
-                count: count,
-                page: page,
-              }
-              dispatch('getFiles', p)
-                .then((resp) => {
-                  resolve(resp);
-                }).catch((error) => {
-                reject(error);
-              });
-
-            })
-            .catch((error) => {
-              reject(error);
-            });
-        } else {
-
-          var p = {
-            folderId: state.currFile.id,
-            count: count,
-            page: page
-          }
-          dispatch('getFiles', payload).then((resp) => {
-            resolve(resp);
-          }).catch((error) => {
-            reject(error);
-          });
-        }
-      });
-    },
 
     delFiles({commit,state,dispatch}){
       //let data  = qs.stringify({ fileIds: state.checkedIds }, {indices: true}) ;

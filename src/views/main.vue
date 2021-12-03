@@ -1,17 +1,21 @@
 <template>
   <div class="container">
-    <div class="silbar">
-      <logo class="logo"/>
-      <search :keyword="keyword" class="search"/>
-      <m class="m" />
-      <div class="remainder">
-        <mcode></mcode>
-        <mprogress></mprogress>
+    <div class="container">
+      <div class="silbar">
+        <logo class="logo"/>
+        <search :keyword="keyword" class="search"/>
+        <m class="m" />
+        <div class="remainder">
+          <mcode></mcode>
+          <mprogress></mprogress>
+        </div>
       </div>
+      <!--    <img src="./assets/logo.png">-->
+      <!--  keepalive 能保留上一页数据 后退时候不会丢失  除去预览的页面 exclude 后边跟的是组件的name并不是路有的name -->
+      <keep-alive exclude="imgPreview,mheader,myScroll">
+        <router-view/>
+      </keep-alive>
     </div>
-
-    <mfile class="mfile" ref="file"></mfile>
-
   </div>
 </template>
 

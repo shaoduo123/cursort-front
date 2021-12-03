@@ -281,6 +281,8 @@ export default {
         this.onItemClick(floder);
     },reload(){
       //alert("我到了")
+      this.clearFileList();
+      this.$forceUpdate();
       this.getList();
     },init(){
       this.fileList = [] ;
@@ -304,7 +306,6 @@ export default {
             });
 
     },getList(){
-
       this.$refs.myScroll.setState(1);
       let _this = this;
       var payload = {
